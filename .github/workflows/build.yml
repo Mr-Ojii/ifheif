@@ -2,6 +2,7 @@ name: Build ifheif
 
 on:
   push:
+  
 
 jobs:
 
@@ -91,6 +92,7 @@ jobs:
         echo "::set-output name=DATE_TIME::${DATE_TIME}"
     # https://gist.github.com/superbrothers/af84a2f8af394a62352e06537a640746        
     - name: Create a Release
+      if: ${{ github.ref == 'refs/heads/master' }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
