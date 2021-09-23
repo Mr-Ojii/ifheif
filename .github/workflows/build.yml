@@ -76,8 +76,8 @@ jobs:
         mkdir ${{ github.workspace }}/Licenses
         cd ${{ github.workspace }}/Licenses
         cp ${{ github.workspace }}/dav1d/COPYING dav1d.txt
-        cp ${{ github.workspace }}/libde265/COPYING dav1d.txt
-        cp ${{ github.workspace }}/libheif/COPYING dav1d.txt
+        cp ${{ github.workspace }}/libde265/COPYING libde265.txt
+        cp ${{ github.workspace }}/libheif/COPYING libheif.txt
 
     - name: Create archive
       run: |
