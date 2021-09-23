@@ -62,7 +62,7 @@ jobs:
         cd libheif
         git checkout refs/tags/v1.12.0
         ./autogen.sh
-        PKG_CONFIG_PATH=${HOME}/dec/lib/pkgconfig LDFLAGS="-std=gnu++11" ./configure --host=i686-w64-mingw32 --prefix=${HOME}/dec --target=i686-w64-mingw32 --enable-static --disable-shared --disable-gdk-pixbuf --disable-examples --disable-libpng
+        PKG_CONFIG_PATH=${HOME}/dec/lib/pkgconfig LDFLAGS="-std=gnu++11" ./configure --host=i686-w64-mingw32 --prefix=${HOME}/dec --target=i686-w64-mingw32 --enable-static --disable-shared --disable-gdk-pixbuf --disable-go --disable-examples
         make
         sudo make install
 
