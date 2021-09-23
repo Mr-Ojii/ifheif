@@ -22,6 +22,8 @@ jobs:
     - name: Posix thread
       run: |
         cd /etc/alternatives
+        sudo ln -s -f /usr/bin/i686-w64-mingw32-cpp-posix i686-w64-mingw32-cpp
+        sudo ln -s -f /usr/bin/i686-w64-mingw32-g++-posix i686-w64-mingw32-g++
         sudo ln -s -f /usr/bin/i686-w64-mingw32-gcc-posix i686-w64-mingw32-gcc
         sudo ln -s -f /usr/bin/i686-w64-mingw32-gcc-9.3-posix i686-w64-mingw32-gcc-9
         sudo ln -s -f /usr/bin/i686-w64-mingw32-gcc-ar-posix i686-w64-mingw32-gcc-ar
