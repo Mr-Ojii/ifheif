@@ -57,6 +57,7 @@ jobs:
 
     - name: Install libheif
       run: |
+        cd ${{ github.workspace }}
         sudo apt remove libpng-dev
         git clone https://github.com/strukturag/libheif.git
         cd libheif
@@ -67,5 +68,7 @@ jobs:
         sudo make install
 
     - name: Build ifheif
-      run: i686-w64-mingw32-g++ ifheif.cpp ifheif.def "-Wl,--dll,--enable-stdcall-fixup" -o ifheif.spi `PKG_CONFIG_PATH=${HOME}/dec/lib/pkgconfig i686-w64-mingw32-pkg-config --libs --cflags libheif libde265 dav1d` -static -shared
+      run: |
+        cd ${{ github.workspace }}/src
+        i686-w64-mingw32-g++ ifheif.cpp ifheif.def "-Wl,--dll,--enable-stdcall-fixup" -o ifheif.spi `PKG_CONFIG_PATH=${HOME}/dec/lib/pkgconfig i686-w64-mingw32-pkg-config --libs --cflags libheif libde265 dav1d` -static -shared
 
