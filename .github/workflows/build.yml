@@ -3,7 +3,6 @@ name: Build ifheif
 on:
   push:
 
-
 jobs:
 
   build:
@@ -69,6 +68,36 @@ jobs:
 
     - name: Build ifheif
       run: |
-        cd ${{ github.workspace }}/src
-        i686-w64-mingw32-g++ ifheif.cpp ifheif.def "-Wl,--dll,--enable-stdcall-fixup" -o ifheif.spi `PKG_CONFIG_PATH=${HOME}/dec/lib/pkgconfig i686-w64-mingw32-pkg-config --libs --cflags libheif libde265 dav1d` -static -shared
+        cd ${{ github.workspace }}
+        i686-w64-mingw32-g++ src/ifheif.cpp src/ifheif.def "-Wl,--dll,--enable-stdcall-fixup" -o ifheif.spi `PKG_CONFIG_PATH=${HOME}/dec/lib/pkgconfig i686-w64-mingw32-pkg-config --libs --cflags libheif libde265 dav1d` -static -shared
 
+    - name: Add License Files
+      run: |
+        mkdir ${{ github.workspace }}/Licenses
+        cd ${{ github.workspace }}/Licenses
+        cp ${{ github.workspace }}/dav1d/COPYING dav1d.txt
+        cp ${{ github.workspace }}/libde265/COPYING dav1d.txt
+        cp ${{ github.workspace }}/libheif/COPYING dav1d.txt
+
+    - name: Create archive
+      run: |
+        cd ${{ github.workspace }}
+        zip ifheif -r src LICENSE Readme.md Licenses ifheif.spi
+
+    - name: Get Date
+      id: get_date
+      run: |
+        DATE_TIME=`date +'%Y-%m-%d-%H-%M-%S'`
+        echo "::set-output name=DATE_TIME::${DATE_TIME}"
+    # https://gist.github.com/superbrothers/af84a2f8af394a62352e06537a640746        
+    - name: Create a Release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        RELEASE_NAME=Build-${{ steps.get_date.outputs.DATE_TIME }}
+        TAG_NAME=build-${{ steps.get_date.outputs.DATE_TIME }}
+        assets=()
+        for asset in ${{ github.workspace }}/*.zip; do
+          assets+=("-a" "$asset")
+        done
+        hub release create "${assets[@]}" -m "$RELEASE_NAME" "$TAG_NAME"
