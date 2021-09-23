@@ -1,0 +1,66 @@
+name: Build ifheif
+
+on:
+  push:
+
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Install depend lib
+      run: sudo apt install mingw-w64 meson ninja-build pkg-config
+
+    - name: Create symbolic link
+      run: sudo ln -s /usr/bin/pkg-config /usr/bin/i686-w64-mingw32-pkg-config
+
+    - name: Posix thread
+      run: |
+        cd /etc/alternatives
+        sudo ln -s -f /usr/bin/i686-w64-mingw32-gcc-posix i686-w64-mingw32-gcc
+        sudo ln -s -f /usr/bin/i686-w64-mingw32-gcc-9.3-posix i686-w64-mingw32-gcc-9
+        sudo ln -s -f /usr/bin/i686-w64-mingw32-gcc-ar-posix i686-w64-mingw32-gcc-ar
+        sudo ln -s -f /usr/bin/i686-w64-mingw32-gcc-nm-posix i686-w64-mingw32-gcc-nm
+        sudo ln -s -f /usr/bin/i686-w64-mingw32-gcc-ranlib-posix i686-w64-mingw32-gcc-ranlib
+        sudo ln -s -f /usr/bin/i686-w64-mingw32-gcov-posix i686-w64-mingw32-gcov
+
+    - name: Install dav1d
+      run: |
+        cd ${{ github.workspace }}
+        git clone https://code.videolan.org/videolan/dav1d.git
+        cd dav1d
+        git checkout refs/tags/0.9.2
+        mkdir build && cd build
+        meson --cross-file=../package/crossfiles/i686-w64-mingw32.meson --buildtype release --default-library=static ..
+        ninja
+        sudo ninja install
+
+    - name: Install libde265
+      run: |
+        cd ${{ github.workspace }}
+        git clone https://github.com/strukturag/libde265.git
+        cd libde265
+        git checkout refs/tags/v1.0.8
+        ./autogen.sh
+        ./configure --host=i686-w64-mingw32 --target=i686-w64-mingw32 --disable-encoder --disable-arm --enable-static --disable-shared
+        make
+        make install
+
+    - name: Install libheif
+      run: |
+        git clone https://github.com/strukturag/libheif.git
+        cd libheif
+        git checkout refs/tags/v1.12.0
+        ./autogen.sh
+        LDFLAGS="-std=gnu++11" ./configure --host=i686-w64-mingw32 --target=i686-w64-mingw32 --enable-static --disable-shared
+        make
+        make install
+
+    - name: Build ifheif
+      run: i686-w64-mingw32-g++ ifheif.cpp ifheif.def "-Wl,--dll,--enable-stdcall-fixup" -o ifheif.spi `i686-w64-mingw32-pkg-config --libs --cflags libheif libde265 dav1d` -static -shared
+
