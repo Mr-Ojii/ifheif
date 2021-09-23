@@ -53,7 +53,7 @@ jobs:
         ./autogen.sh
         ./configure --host=i686-w64-mingw32 --target=i686-w64-mingw32 --disable-encoder --disable-arm --enable-static --disable-shared
         make
-        make install
+        sudo make install
 
     - name: Install libheif
       run: |
@@ -63,7 +63,7 @@ jobs:
         ./autogen.sh
         LDFLAGS="-std=gnu++11" ./configure --host=i686-w64-mingw32 --target=i686-w64-mingw32 --enable-static --disable-shared
         make
-        make install
+        sudo make install
 
     - name: Build ifheif
       run: i686-w64-mingw32-g++ ifheif.cpp ifheif.def "-Wl,--dll,--enable-stdcall-fixup" -o ifheif.spi `i686-w64-mingw32-pkg-config --libs --cflags libheif libde265 dav1d` -static -shared
