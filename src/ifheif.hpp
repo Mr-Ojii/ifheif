@@ -5,8 +5,8 @@
 static const char* plugin_info[] = {
 	"00IN",
 	"HEIF AVIF Reader by Mr-Ojii",
-    "*.heif;*.avif",
-	"HEIF File(*.heif);AVIF File(*.avif)"
+    "*.heif;*.heic;*.avif",
+	"HEIF File(*.heif,*.heic);AVIF File(*.avif)"
 };
 
 struct PictureInfo {
