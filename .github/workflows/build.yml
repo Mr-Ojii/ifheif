@@ -48,6 +48,8 @@ jobs:
         git clone https://github.com/strukturag/libde265.git
         cd libde265
         git checkout refs/tags/v1.0.8
+        sed -e 's/ -static-libstdc++//g' ./dec265/Makefile.am > ./Mf.am
+        mv -f ./Mf.am ./dec265/Makefile.am
         ./autogen.sh
         ./configure --host=i686-w64-mingw32 --target=i686-w64-mingw32 --disable-encoder --disable-arm --enable-static --disable-shared
         make
