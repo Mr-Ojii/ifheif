@@ -10,7 +10,7 @@ libheifを使用し、HEIF/AVIFを読み込むためのSusie Plug-inです。(Av
 のインストールを先にして、
 
 ```sh
-i686-w64-mingw32-g++ ifheif.cpp ifheif.def "-Wl,--dll,--enable-stdcall-fixup" -o ifheif.spi `PKG_CONFIG_PATH=任意のフォルダ i686-w64-mingw32-pkg-config --libs --cflags libheif libde265 dav1d` -static -shared
+i686-w64-mingw32-gcc ifheif.c ifheif.def "-Wl,--dll,--enable-stdcall-fixup" -o ifheif.spi `PKG_CONFIG_PATH=任意のフォルダ i686-w64-mingw32-pkg-config --libs --cflags libheif libde265 dav1d` -static -shared
 ```
 
 などでビルドしてください。

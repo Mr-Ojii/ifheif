@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <libheif/heif.h>
 #include <windows.h>
-#include "ifheif.hpp"
+#include "ifheif.h"
 
 extern "C" int __declspec(dllexport) __stdcall GetPluginInfo(int infono, LPSTR buf, int buflen) {
     if (infono < 0 || infono >= sizeof(plugin_info) / sizeof(plugin_info[0]))
