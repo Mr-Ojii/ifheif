@@ -19,7 +19,7 @@ int __declspec(dllexport) __stdcall IsSupported(LPSTR filename, DWORD dw) {
         data = (BYTE *)dw;
     } else {
         DWORD bytes;
-    	if(!ReadFile((HANDLE)dw, buf, sizeof(buf), &bytes, nullptr)) {
+    	if(!ReadFile((HANDLE)dw, buf, sizeof(buf), &bytes, NULL)) {
             return 0;
 	    }
         SetFilePointer((HANDLE)dw, 0, NULL, FILE_BEGIN);
@@ -66,7 +66,7 @@ int __declspec(dllexport) __stdcall IsSupported(LPSTR filename, DWORD dw) {
 int __declspec(dllexport) __stdcall GetPictureInfo(LPSTR buf, long len, unsigned int flag, PictureInfo *lpInfo) {
     void* data;
     long length;
-    void* bufpoint = nullptr;
+    void* bufpoint = NULL;
     int buf_success = FALSE;
     int ret = 1;
 
@@ -81,7 +81,7 @@ int __declspec(dllexport) __stdcall GetPictureInfo(LPSTR buf, long len, unsigned
                     if (ReadFile(handle, bufpoint, filesize, &readsize, NULL)) {
                         data = bufpoint;
                         length = readsize;
-                        buf_success = true;
+                        buf_success = TRUE;
                     } else {
                         ret = 1;
                     }
@@ -122,7 +122,7 @@ int __declspec(dllexport) __stdcall GetPicture(LPSTR buf, long len, unsigned int
     lpPrgressCallback = NULL;
     void* data;
     long length;
-    void* bufpoint = nullptr;
+    void* bufpoint = NULL;
     int buf_success = FALSE;
     int ret = 1;
 
@@ -137,7 +137,7 @@ int __declspec(dllexport) __stdcall GetPicture(LPSTR buf, long len, unsigned int
                     if (ReadFile(handle, bufpoint, filesize, &readsize, NULL)) {
                         data = bufpoint;
                         length = readsize;
-                        buf_success = true;
+                        buf_success = TRUE;
                     } else {
                         ret = 1;
                     }
@@ -194,11 +194,11 @@ int __declspec(dllexport) __stdcall GetPreview(LPSTR buf, long len, unsigned int
 
 int load_heif(void* buf, long len, PictureInfo* info, HLOCAL* data, BOOL decode_image) {
     int ret = 0;
-    const uint8_t* img_dat = nullptr;
-    if (buf != nullptr && len != 0) {
-        heif_context* ctx = heif_context_alloc();
-        if(!heif_context_read_from_memory(ctx, buf, len, nullptr).code) {
-            heif_image_handle* handle;
+    const uint8_t* img_dat = NULL;
+    if (buf != NULL && len != 0) {
+        struct heif_context* ctx = heif_context_alloc();
+        if(!heif_context_read_from_memory(ctx, buf, len, NULL).code) {
+            struct heif_image_handle* handle;
             if(!heif_context_get_primary_image_handle(ctx, &handle).code){
                 //pic_info
                 info->left       = 0;
@@ -208,11 +208,11 @@ int load_heif(void* buf, long len, PictureInfo* info, HLOCAL* data, BOOL decode_
                 info->x_density  = 0;
                 info->y_density  = 0;
                 info->colorDepth = 32;
-                info->hInfo      = nullptr;
+                info->hInfo      = NULL;
 
                 if(decode_image) {
-                    heif_image* img;
-                    if(!heif_decode_image(handle, &img, heif_colorspace_RGB, heif_chroma_interleaved_RGBA, nullptr).code) {
+                    struct heif_image* img;
+                    if(!heif_decode_image(handle, &img, heif_colorspace_RGB, heif_chroma_interleaved_RGBA, NULL).code) {
                         int stride;
                         img_dat = heif_image_get_plane_readonly(img, heif_channel_interleaved, &stride);
                         *data = LocalAlloc(LMEM_MOVEABLE, info->width * info->height * (info->colorDepth / 8));
