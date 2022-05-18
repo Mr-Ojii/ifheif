@@ -70,7 +70,7 @@ jobs:
     - name: Build ifheif
       run: |
         cd ${{ github.workspace }}
-        i686-w64-mingw32-g++ src/ifheif.c src/ifheif.def "-Wl,--dll,--enable-stdcall-fixup" -o ifheif.spi `PKG_CONFIG_PATH=${HOME}/dec/lib/pkgconfig i686-w64-mingw32-pkg-config --libs --cflags libheif libde265 dav1d` -static -shared
+        i686-w64-mingw32-g++ src/ifheif.cpp src/ifheif.def "-Wl,--dll,--enable-stdcall-fixup" -o ifheif.spi `PKG_CONFIG_PATH=${HOME}/dec/lib/pkgconfig i686-w64-mingw32-pkg-config --libs --cflags libheif libde265 dav1d` -static -shared
 
     - name: Add License Files
       run: |
