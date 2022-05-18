@@ -9,7 +9,7 @@ static const char* plugin_info[] = {
 	"HEIF File(*.heif,*.heic);AVIF File(*.avif)"
 };
 
-struct PictureInfo {
+typedef struct {
     long left, top;
     long width;
     long height;
@@ -17,7 +17,7 @@ struct PictureInfo {
     WORD y_density;
     short colorDepth;
     HLOCAL hInfo;
-};
+} PictureInfo;
 
 int load_heif(void* buf, long len, PictureInfo* info, HLOCAL* data, BOOL decode_image);
 
