@@ -12,6 +12,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
 
     - name: Install depend lib
       run: sudo apt install nasm mingw-w64 meson ninja-build pkg-config
@@ -90,14 +92,16 @@ jobs:
       run: |
         DATE_TIME=`date +'%Y-%m-%d-%H-%M-%S'`
         echo "::set-output name=DATE_TIME::${DATE_TIME}"
+    
     # https://gist.github.com/superbrothers/af84a2f8af394a62352e06537a640746        
     - name: Create a Release
       if: ${{ github.ref == 'refs/heads/master' }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        RELEASE_NAME=Build-${{ steps.get_date.outputs.DATE_TIME }}
-        TAG_NAME=build-${{ steps.get_date.outputs.DATE_TIME }}
+        REVCOUNT=`git rev-list --count HEAD`
+        RELEASE_NAME=r${REVCOUNT}
+        TAG_NAME=r${REVCOUNT}
         assets=()
         for asset in ${{ github.workspace }}/*.zip; do
           assets+=("-a" "$asset")
