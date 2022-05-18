@@ -1,5 +1,5 @@
-#ifndef _HEIF_SPI_H_
-#define _HEIF_SPI_H_
+#ifndef _HEIF_SPI_HPP_
+#define _HEIF_SPI_HPP_
 #include <windows.h>
 
 static const char* plugin_info[] = {

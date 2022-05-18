@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <libheif/heif.h>
 #include <windows.h>
-#include "ifheif.h"
+#include "ifheif.hpp"
 
-int __declspec(dllexport) __stdcall GetPluginInfo(int infono, LPSTR buf, int buflen) {
+EXTERN_C int __declspec(dllexport) __stdcall GetPluginInfo(int infono, LPSTR buf, int buflen) {
     if (infono < 0 || infono >= sizeof(plugin_info) / sizeof(plugin_info[0]))
         return 0;
 
@@ -12,7 +12,7 @@ int __declspec(dllexport) __stdcall GetPluginInfo(int infono, LPSTR buf, int buf
     return strlen(buf); 
 }
 
-int __declspec(dllexport) __stdcall IsSupported(LPSTR filename, DWORD dw) {
+EXTERN_C int __declspec(dllexport) __stdcall IsSupported(LPSTR filename, DWORD dw) {
     BYTE buf[2048] = {0}, *data;
     
     if( dw & ~0xffff ) {
@@ -63,7 +63,7 @@ int __declspec(dllexport) __stdcall IsSupported(LPSTR filename, DWORD dw) {
     return 0;
 }
 
-int __declspec(dllexport) __stdcall GetPictureInfo(LPSTR buf, long len, unsigned int flag, PictureInfo *lpInfo) {
+EXTERN_C int __declspec(dllexport) __stdcall GetPictureInfo(LPSTR buf, long len, unsigned int flag, PictureInfo *lpInfo) {
     void* data;
     long length;
     void* bufpoint = NULL;
@@ -118,7 +118,7 @@ int __declspec(dllexport) __stdcall GetPictureInfo(LPSTR buf, long len, unsigned
     return ret;
 }
 
-int __declspec(dllexport) __stdcall GetPicture(LPSTR buf, long len, unsigned int flag, HANDLE *pHBInfo, HANDLE *pHBm, FARPROC lpPrgressCallback, long lData) {
+EXTERN_C int __declspec(dllexport) __stdcall GetPicture(LPSTR buf, long len, unsigned int flag, HANDLE *pHBInfo, HANDLE *pHBm, FARPROC lpPrgressCallback, long lData) {
     lpPrgressCallback = NULL;
     void* data;
     long length;
@@ -188,7 +188,7 @@ int __declspec(dllexport) __stdcall GetPicture(LPSTR buf, long len, unsigned int
     return ret;
 }
 
-int __declspec(dllexport) __stdcall GetPreview(LPSTR buf, long len, unsigned int flag, HANDLE *pHBInfo, HANDLE *pHBm, FARPROC loPrgressCallback, long lData) {
+EXTERN_C int __declspec(dllexport) __stdcall GetPreview(LPSTR buf, long len, unsigned int flag, HANDLE *pHBInfo, HANDLE *pHBm, FARPROC loPrgressCallback, long lData) {
     return -1;
 }
 
