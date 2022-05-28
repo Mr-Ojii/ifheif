@@ -194,7 +194,6 @@ EXTERN_C int __declspec(dllexport) __stdcall GetPreview(LPSTR buf, long len, uns
 
 int load_heif(void* buf, long len, PictureInfo* info, HLOCAL* data, BOOL decode_image) {
     int ret = 0;
-    const Pixel_RGBA* img_dat = NULL;
     if (buf != NULL && len != 0) {
         struct heif_context* ctx = heif_context_alloc();
         if(!heif_context_read_from_memory(ctx, buf, len, NULL).code) {
@@ -214,7 +213,7 @@ int load_heif(void* buf, long len, PictureInfo* info, HLOCAL* data, BOOL decode_
                     struct heif_image* img;
                     if(!heif_decode_image(handle, &img, heif_colorspace_RGB, heif_chroma_interleaved_RGBA, NULL).code) {
                         int stride;
-                        img_dat = reinterpret_cast<Pixel_RGBA*>(heif_image_get_plane_readonly(img, heif_channel_interleaved, &stride));
+                        Pixel_RGBA* img_dat = reinterpret_cast<Pixel_RGBA*>(heif_image_get_plane_readonly(img, heif_channel_interleaved, &stride));
                         *data = LocalAlloc(LMEM_MOVEABLE, info->width * info->height * (info->colorDepth / 8));
                         if(*data) {
                             Pixel_BGRA* dat = reinterpret_cast<Pixel_BGRA*>(LocalLock(*data));
