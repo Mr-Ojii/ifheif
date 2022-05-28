@@ -16,7 +16,7 @@ EXTERN_C int __declspec(dllexport) __stdcall IsSupported(LPSTR filename, DWORD d
     BYTE buf[2048] = {0}, *data;
     
     if( dw & ~0xffff ) {
-        data = (BYTE *)dw;
+        data = reinterpret_cast<BYTE*>(dw);
     } else {
         DWORD bytes;
     	if(!ReadFile((HANDLE)dw, buf, sizeof(buf), &bytes, NULL)) {
@@ -163,7 +163,7 @@ EXTERN_C int __declspec(dllexport) __stdcall GetPicture(LPSTR buf, long len, uns
         HLOCAL pic_data;
         if(load_heif(data, length, &info, &pic_data, TRUE)) {
             *pHBInfo = LocalAlloc(LMEM_MOVEABLE, sizeof(BITMAPINFO));
-            BITMAPINFO* pinfo = (BITMAPINFO*)LocalLock(*pHBInfo);
+            BITMAPINFO* pinfo = reinterpret_cast<BITMAPINFO*>(LocalLock(*pHBInfo));
 
             pinfo->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
             pinfo->bmiHeader.biWidth = info.width;
@@ -214,10 +214,10 @@ int load_heif(void* buf, long len, PictureInfo* info, HLOCAL* data, BOOL decode_
                     struct heif_image* img;
                     if(!heif_decode_image(handle, &img, heif_colorspace_RGB, heif_chroma_interleaved_RGBA, NULL).code) {
                         int stride;
-                        img_dat = heif_image_get_plane_readonly(img, heif_channel_interleaved, &stride);
+                        img_dat = reinterpret_cast<Pixel_RGBA*>(heif_image_get_plane_readonly(img, heif_channel_interleaved, &stride));
                         *data = LocalAlloc(LMEM_MOVEABLE, info->width * info->height * (info->colorDepth / 8));
                         if(*data) {
-                            Pixel_BGRA* dat = (uint8_t*)LocalLock(*data);
+                            Pixel_BGRA* dat = reinterpret_cast<Pixel_BGRA*>(LocalLock(*data));
                             for(int i = 0; i < info->height; i++) {
                                 for(int j = 0; j < info->width; j++) {
                                     dat[info->width * i + j].b = img_dat[(info->width * (info->height - i - 1)) + j].b;
