@@ -1,5 +1,6 @@
 #ifndef _HEIF_SPI_HPP_
 #define _HEIF_SPI_HPP_
+#include <cstdint>
 #include <windows.h>
 
 static const char* plugin_info[] = {
@@ -18,6 +19,14 @@ typedef struct {
     short colorDepth;
     HLOCAL hInfo;
 } PictureInfo;
+
+typedef struct {
+    uint8_t b, g, r, a;
+} Pixel_BGRA;
+
+typedef struct {
+    uint8_t r, g, b, a;
+} Pixel_RGBA;
 
 int load_heif(void* buf, long len, PictureInfo* info, HLOCAL* data, BOOL decode_image);
 

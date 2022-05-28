@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <cstdio>
 #include <libheif/heif.h>
 #include <windows.h>
 #include "ifheif.hpp"
@@ -194,7 +194,7 @@ EXTERN_C int __declspec(dllexport) __stdcall GetPreview(LPSTR buf, long len, uns
 
 int load_heif(void* buf, long len, PictureInfo* info, HLOCAL* data, BOOL decode_image) {
     int ret = 0;
-    const uint8_t* img_dat = NULL;
+    const Pixel_RGBA* img_dat = NULL;
     if (buf != NULL && len != 0) {
         struct heif_context* ctx = heif_context_alloc();
         if(!heif_context_read_from_memory(ctx, buf, len, NULL).code) {
@@ -217,13 +217,13 @@ int load_heif(void* buf, long len, PictureInfo* info, HLOCAL* data, BOOL decode_
                         img_dat = heif_image_get_plane_readonly(img, heif_channel_interleaved, &stride);
                         *data = LocalAlloc(LMEM_MOVEABLE, info->width * info->height * (info->colorDepth / 8));
                         if(*data) {
-                            uint8_t* dat = (uint8_t*)LocalLock(*data);
+                            Pixel_BGRA* dat = (uint8_t*)LocalLock(*data);
                             for(int i = 0; i < info->height; i++) {
                                 for(int j = 0; j < info->width; j++) {
-                                    dat[(info->width * i) * 4 + j * 4 + 0] = img_dat[(info->width * (info->height - i - 1)) * 4 + j * 4 + 2];
-                                    dat[(info->width * i) * 4 + j * 4 + 1] = img_dat[(info->width * (info->height - i - 1)) * 4 + j * 4 + 1];
-                                    dat[(info->width * i) * 4 + j * 4 + 2] = img_dat[(info->width * (info->height - i - 1)) * 4 + j * 4 + 0];
-                                    dat[(info->width * i) * 4 + j * 4 + 3] = img_dat[(info->width * (info->height - i - 1)) * 4 + j * 4 + 3];
+                                    dat[info->width * i + j].b = img_dat[(info->width * (info->height - i - 1)) + j].b;
+                                    dat[info->width * i + j].g = img_dat[(info->width * (info->height - i - 1)) + j].g;
+                                    dat[info->width * i + j].r = img_dat[(info->width * (info->height - i - 1)) + j].r;
+                                    dat[info->width * i + j].a = img_dat[(info->width * (info->height - i - 1)) + j].a;
                                 }
                             }
                             LocalUnlock(*data);
