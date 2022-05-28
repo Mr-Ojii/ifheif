@@ -54,8 +54,8 @@ jobs:
         mv -f ./Mf.am ./dec265/Makefile.am
         ./autogen.sh
         PKG_CONFIG_PATH=${HOME}/dec/lib/pkgconfig ./configure --host=i686-w64-mingw32 --target=i686-w64-mingw32 --prefix=${HOME}/dec --disable-encoder --disable-arm --enable-static --disable-shared
-        make
-        sudo make install
+        make -j$(nproc)
+        sudo make install -j$(nproc)
 
     - name: Install libheif
       run: |
@@ -66,8 +66,8 @@ jobs:
         git checkout refs/tags/v1.12.0
         ./autogen.sh
         PKG_CONFIG_PATH=${HOME}/dec/lib/pkgconfig LDFLAGS="-std=gnu++11" ./configure --host=i686-w64-mingw32 --prefix=${HOME}/dec --target=i686-w64-mingw32 --enable-static --disable-shared --disable-gdk-pixbuf --disable-go --disable-examples
-        make
-        sudo make install
+        make -j$(nproc)
+        sudo make install -j$(nproc)
 
     - name: Build ifheif
       run: |
