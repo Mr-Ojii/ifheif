@@ -19,9 +19,9 @@ EXTERN_C int __declspec(dllexport) __stdcall IsSupported(LPSTR filename, DWORD d
         data = reinterpret_cast<BYTE*>(dw);
     } else {
         DWORD bytes;
-    	if(!ReadFile((HANDLE)dw, buf, sizeof(buf), &bytes, NULL)) {
+        if(!ReadFile((HANDLE)dw, buf, sizeof(buf), &bytes, NULL)) {
             return 0;
-	    }
+        }
         SetFilePointer((HANDLE)dw, 0, NULL, FILE_BEGIN);
         data = buf;
     }
@@ -37,7 +37,7 @@ EXTERN_C int __declspec(dllexport) __stdcall IsSupported(LPSTR filename, DWORD d
         }
         if(size <= 8) {
             break;
-	    }
+        }
 
         char box_type[5] = { '\0' };
         for(int i = 0; i < 4; i++) {

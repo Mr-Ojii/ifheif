@@ -4,10 +4,10 @@
 #include <windows.h>
 
 static const char* plugin_info[] = {
-	"00IN",
-	"HEIF AVIF Reader by Mr-Ojii",
+    "00IN",
+    "HEIF AVIF Reader by Mr-Ojii",
     "*.heif;*.heic;*.avif",
-	"HEIF File(*.heif,*.heic);AVIF File(*.avif)"
+    "HEIF File(*.heif,*.heic);AVIF File(*.avif)"
 };
 
 typedef struct {
