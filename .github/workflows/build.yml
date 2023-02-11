@@ -86,12 +86,6 @@ jobs:
       run: |
         cd ${{ github.workspace }}
         zip ifheif -r src LICENSE Readme.md Licenses ifheif.spi
-
-    - name: Get Date
-      id: get_date
-      run: |
-        DATE_TIME=`date +'%Y-%m-%d-%H-%M-%S'`
-        echo "::set-output name=DATE_TIME::${DATE_TIME}"
     
     # https://gist.github.com/superbrothers/af84a2f8af394a62352e06537a640746        
     - name: Create a Release
