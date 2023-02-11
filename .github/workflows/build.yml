@@ -49,7 +49,7 @@ jobs:
         cd ${{ github.workspace }}
         git clone https://github.com/strukturag/libde265.git
         cd libde265
-        git checkout refs/tags/v1.0.8
+        git checkout refs/tags/v1.0.１１
         sed -e 's/ -static-libstdc++//g' ./dec265/Makefile.am > ./Mf.am
         mv -f ./Mf.am ./dec265/Makefile.am
         ./autogen.sh
@@ -63,7 +63,7 @@ jobs:
         sudo apt remove libpng-dev
         git clone https://github.com/strukturag/libheif.git
         cd libheif
-        git checkout refs/tags/v1.12.0
+        git checkout refs/tags/v1.14.2
         ./autogen.sh
         PKG_CONFIG_PATH=${HOME}/dec/lib/pkgconfig LDFLAGS="-std=gnu++11" ./configure --host=i686-w64-mingw32 --prefix=${HOME}/dec --target=i686-w64-mingw32 --enable-static --disable-shared --disable-gdk-pixbuf --disable-go --disable-examples
         make -j$(nproc)
