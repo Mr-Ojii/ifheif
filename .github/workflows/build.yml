@@ -7,7 +7,7 @@ on:
 jobs:
 
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
     - name: Checkout repository
@@ -27,7 +27,7 @@ jobs:
         sudo ln -s -f /usr/bin/i686-w64-mingw32-cpp-posix i686-w64-mingw32-cpp
         sudo ln -s -f /usr/bin/i686-w64-mingw32-g++-posix i686-w64-mingw32-g++
         sudo ln -s -f /usr/bin/i686-w64-mingw32-gcc-posix i686-w64-mingw32-gcc
-        sudo ln -s -f /usr/bin/i686-w64-mingw32-gcc-9.3-posix i686-w64-mingw32-gcc-9
+        sudo ln -s -f /usr/bin/i686-w64-mingw32-gcc-10-posix i686-w64-mingw32-gcc-10
         sudo ln -s -f /usr/bin/i686-w64-mingw32-gcc-ar-posix i686-w64-mingw32-gcc-ar
         sudo ln -s -f /usr/bin/i686-w64-mingw32-gcc-nm-posix i686-w64-mingw32-gcc-nm
         sudo ln -s -f /usr/bin/i686-w64-mingw32-gcc-ranlib-posix i686-w64-mingw32-gcc-ranlib
