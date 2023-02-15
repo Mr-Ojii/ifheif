@@ -36,7 +36,7 @@ jobs:
     - name: Install dav1d
       run: |
         cd ${{ github.workspace }}
-        git clone https://code.videolan.org/videolan/dav1d.git -b 1.0.0
+        git clone https://code.videolan.org/videolan/dav1d.git -b 1.0.0 --depth 1
         cd dav1d
         mkdir build && cd build
         meson --cross-file=../package/crossfiles/i686-w64-mingw32.meson --prefix=${HOME}/dec --buildtype release --default-library=static ..
@@ -46,7 +46,7 @@ jobs:
     - name: Install libde265
       run: |
         cd ${{ github.workspace }}
-        git clone https://github.com/strukturag/libde265.git -b v1.0.11
+        git clone https://github.com/strukturag/libde265.git -b v1.0.11 --depth 1
         cd libde265
         sed -e 's/ -static-libstdc++//g' ./dec265/Makefile.am > ./Mf.am
         mv -f ./Mf.am ./dec265/Makefile.am
@@ -59,7 +59,7 @@ jobs:
       run: |
         cd ${{ github.workspace }}
         sudo apt remove libpng-dev
-        git clone https://github.com/strukturag/libheif.git -b v1.14.2
+        git clone https://github.com/strukturag/libheif.git -b v1.14.2 --depth 1
         cd libheif
         ./autogen.sh
         PKG_CONFIG_PATH=${HOME}/dec/lib/pkgconfig LDFLAGS="-std=gnu++11" ./configure --host=i686-w64-mingw32 --prefix=${HOME}/dec --target=i686-w64-mingw32 --enable-static --disable-shared --disable-gdk-pixbuf --disable-go --disable-examples
