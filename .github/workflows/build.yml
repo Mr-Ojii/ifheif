@@ -59,7 +59,7 @@ jobs:
       run: |
         cd ${{ github.workspace }}
         sudo apt remove libpng-dev
-        git clone https://github.com/strukturag/libheif.git -b v1.14.2 --depth 1
+        git clone https://github.com/strukturag/libheif.git -b v1.15.2 --depth 1
         cd libheif
         ./autogen.sh
         PKG_CONFIG_PATH=${HOME}/dec/lib/pkgconfig LDFLAGS="-std=gnu++11" ./configure --host=i686-w64-mingw32 --prefix=${HOME}/dec --target=i686-w64-mingw32 --enable-static --disable-shared --disable-gdk-pixbuf --disable-go --disable-examples
