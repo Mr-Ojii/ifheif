@@ -93,8 +93,4 @@ jobs:
         REVCOUNT=`git rev-list --count HEAD`
         RELEASE_NAME=r${REVCOUNT}
         TAG_NAME=r${REVCOUNT}
-        assets=()
-        for asset in ${{ github.workspace }}/*.zip; do
-          assets+=("-a" "$asset")
-        done
-        hub release create "${assets[@]}" -m "$RELEASE_NAME" "$TAG_NAME"
+        gh release create "${TAG_NAME}" ${{ github.workspace }}/*.zip -t "${RELEASE_NAME}"
