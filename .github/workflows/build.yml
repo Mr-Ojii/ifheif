@@ -36,7 +36,7 @@ jobs:
     - name: Install dav1d
       run: |
         cd ${{ github.workspace }}
-        git clone https://code.videolan.org/videolan/dav1d.git -b 1.3.0 --depth 1
+        git clone https://code.videolan.org/videolan/dav1d.git -b 1.4.0 --depth 1
         cd dav1d
         mkdir build && cd build
         meson --cross-file=../package/crossfiles/i686-w64-mingw32.meson --prefix=${HOME}/dec --buildtype release --default-library=static ..
