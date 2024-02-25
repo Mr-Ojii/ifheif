@@ -26,7 +26,6 @@ EXTERN_C int __declspec(dllexport) __stdcall IsSupported(LPSTR filename, DWORD d
         data = buf;
     }
 
-    BOOL ret = FALSE;
     uint32_t byte_pos = 0;
     for(uint32_t byte_pos = 0; byte_pos < 2048;) {
         uint32_t size = 0;
@@ -50,11 +49,15 @@ EXTERN_C int __declspec(dllexport) __stdcall IsSupported(LPSTR filename, DWORD d
                 major_brand[i] = data[byte_pos];
                 byte_pos++;
             }
-            if(strcmp("heic", major_brand) == 0 || strcmp("avif", major_brand) == 0) {
-                return 1;
-            } else {
-                return 0;
+
+            int support_brand_length = sizeof(support_brand) / sizeof(support_brand[0]);
+            int ret = 0;
+            for(int i = 0; i < support_brand_length; i++)
+            {
+                if(strcmp(support_brand[i], major_brand) == 0)
+                    ret = 1;
             }
+            return ret;
         }
 
         byte_pos += (size - 8);

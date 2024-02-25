@@ -28,6 +28,20 @@ typedef struct {
     uint8_t r, g, b, a;
 } Pixel_RGBA;
 
+
+// https://nokiatech.github.io/heif/technical.html
+// https://aomediacodec.github.io/av1-avif/
+static const char* support_brand[] = {
+    // "mif1",
+    // "mis1",
+    "heic",
+    "heix",
+    "hevc",
+    "hevx",
+    "avif",
+    "avis",
+};
+
 int load_heif(void* buf, long len, PictureInfo* info, HLOCAL* data, BOOL decode_image);
 
 #endif
