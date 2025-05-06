@@ -75,21 +75,26 @@ jobs:
     - name: Add License Files
       run: |
         cd
-        pwd
-        ls -la
         mkdir Licenses
         cd Licenses
-        cp dav1d/COPYING dav1d.txt
-        cp libde265/COPYING libde265.txt
-        cp libheif/COPYING libheif.txt
+        cp ../dav1d/COPYING dav1d.txt
+        cp ../libde265/COPYING libde265.txt
+        cp ../libheif/COPYING libheif.txt
 
     - name: Create archive
       run: |
         cd
         zip ifheif -r src LICENSE Readme.md Licenses ifheif.spi
+
+    - name: Copy archive
+      shell: pwsh
+      run: |
+        cd ${{ github.workspace }}
+        cp ${{ steps.msys2.outputs.msys2-location }}/home/runneradmin/*.zip .
     
     # https://gist.github.com/superbrothers/af84a2f8af394a62352e06537a640746        
     - name: Create a Release
+      shell: pwsh
       if: ${{ github.ref == 'refs/heads/master' }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
