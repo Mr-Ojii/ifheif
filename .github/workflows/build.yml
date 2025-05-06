@@ -99,7 +99,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        cd
+        cd ${{ github.workspace }}
         $Env:REVCOUNT=`git rev-list --count HEAD`
         $Env:RELEASE_NAME="r$Env:REVCOUNT"
         $Env:TAG_NAME="r$Env:REVCOUNT"
