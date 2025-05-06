@@ -17,6 +17,7 @@ jobs:
         msystem: MINGW32
         install: >-
           git
+          autotools
           nasm
           zip
           mingw-w64-i686-toolchain
