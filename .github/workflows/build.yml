@@ -68,7 +68,6 @@ jobs:
         make install -j$(nproc)
 
     - name: Build ifheif
-      shell: cmd
       run: |
         cd
         i686-w64-mingw32-g++ src/ifheif.cpp src/ifheif.def "-Wl,--dll,--enable-stdcall-fixup" -o ifheif.spi `PKG_CONFIG_PATH=${HOME}/dec/lib/pkgconfig i686-w64-mingw32-pkg-config --libs --cflags libheif libde265 dav1d` -static -shared
