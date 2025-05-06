@@ -75,6 +75,8 @@ jobs:
     - name: Add License Files
       run: |
         cd
+        pwd
+        ls -la
         mkdir Licenses
         cd Licenses
         cp dav1d/COPYING dav1d.txt
