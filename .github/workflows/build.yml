@@ -17,6 +17,7 @@ jobs:
         msystem: MINGW32
         install: >-
           git
+          nasm
           zip
           mingw-w64-i686-toolchain
           mingw-w64-i686-meson
