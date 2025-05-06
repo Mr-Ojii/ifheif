@@ -100,10 +100,10 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         cd ${{ github.workspace }}
-        $Env:REVCOUNT=`git rev-list --count HEAD`
-        $Env:RELEASE_NAME="r$Env:REVCOUNT"
-        $Env:TAG_NAME="r$Env:REVCOUNT"
-        gh release create "$Env:TAG_NAME" ./*.zip -t "$Env:RELEASE_NAME"
+        $REVCOUNT=git rev-list --count HEAD
+        $RELEASE_NAME="r${REVCOUNT}"
+        $TAG_NAME="r{REVCOUNT}"
+        gh release create "${TAG_NAME}" ./*.zip -t "${RELEASE_NAME}"
 
   build:
     runs-on: ubuntu-22.04
