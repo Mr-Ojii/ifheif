@@ -53,7 +53,6 @@ jobs:
     - name: Install libheif
       run: |
         cd
-        sudo apt remove libpng-dev
         git clone https://github.com/strukturag/libheif.git -b v1.15.2 --depth 1
         cd libheif
         ./autogen.sh
