@@ -102,5 +102,5 @@ jobs:
         cd ${{ github.workspace }}
         $REVCOUNT=git rev-list --count HEAD
         $RELEASE_NAME="r${REVCOUNT}"
-        $TAG_NAME="r{REVCOUNT}"
+        $TAG_NAME="r${REVCOUNT}"
         gh release create "${TAG_NAME}" ./*.zip -t "${RELEASE_NAME}"
