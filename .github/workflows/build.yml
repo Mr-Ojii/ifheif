@@ -48,7 +48,7 @@ jobs:
     - name: Install libde265
       run: |
         cd
-        git clone https://github.com/strukturag/libde265.git -b v1.0.16 --depth 1
+        git clone https://github.com/strukturag/libde265.git -b v1.0.15 --depth 1
         cd libde265
         sed -e 's/ -static-libstdc++//g' ./dec265/Makefile.am > ./Mf.am
         mv -f ./Mf.am ./dec265/Makefile.am
