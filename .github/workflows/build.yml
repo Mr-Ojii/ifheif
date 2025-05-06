@@ -5,6 +5,90 @@ on:
   
 
 jobs:
+  msys-build:
+    defaults:
+      run:
+        shell: msys2 {0}
+    runs-on: windows-latest
+    steps:
+    - uses: msys2/setup-msys2@v2
+      with:
+        update: true
+        msystem: MINGW32
+        install: >-
+          git
+          zip
+          mingw-w64-i686-toolchain
+          mingw-w64-i686-meson
+
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Install dav1d
+      run: |
+        cd
+        git clone https://code.videolan.org/videolan/dav1d.git -b 1.5.1 --depth 1
+        cd dav1d
+        mkdir build && cd build
+        meson --prefix=${HOME}/dec --buildtype release --default-library=static ..
+        ninja
+        ninja install
+
+    - name: Install libde265
+      run: |
+        cd
+        git clone https://github.com/strukturag/libde265.git -b v1.0.15 --depth 1
+        cd libde265
+        sed -e 's/ -static-libstdc++//g' ./dec265/Makefile.am > ./Mf.am
+        mv -f ./Mf.am ./dec265/Makefile.am
+        ./autogen.sh
+        PKG_CONFIG_PATH=${HOME}/dec/lib/pkgconfig ./configure --prefix=${HOME}/dec --disable-encoder --disable-arm --enable-static --disable-shared
+        make -j$(nproc)
+        make install -j$(nproc)
+
+    - name: Install libheif
+      run: |
+        cd
+        sudo apt remove libpng-dev
+        git clone https://github.com/strukturag/libheif.git -b v1.15.2 --depth 1
+        cd libheif
+        ./autogen.sh
+        PKG_CONFIG_PATH=${HOME}/dec/lib/pkgconfig LDFLAGS="-std=gnu++11" ./configure --prefix=${HOME}/dec --enable-static --disable-shared --disable-gdk-pixbuf --disable-go --disable-examples
+        make -j$(nproc)
+        make install -j$(nproc)
+
+    - name: Build ifheif
+      run: |
+        cd
+        i686-w64-mingw32-g++ src/ifheif.cpp src/ifheif.def "-Wl,--dll,--enable-stdcall-fixup" -o ifheif.spi `PKG_CONFIG_PATH=${HOME}/dec/lib/pkgconfig i686-w64-mingw32-pkg-config --libs --cflags libheif libde265 dav1d` -static -shared
+
+    - name: Add License Files
+      run: |
+        cd
+        mkdir Licenses
+        cd Licenses
+        cp dav1d/COPYING dav1d.txt
+        cp libde265/COPYING libde265.txt
+        cp libheif/COPYING libheif.txt
+
+    - name: Create archive
+      run: |
+        cd
+        zip ifheif -r src LICENSE Readme.md Licenses ifheif.spi
+    
+    # https://gist.github.com/superbrothers/af84a2f8af394a62352e06537a640746        
+    - name: Create a Release
+      if: ${{ github.ref == 'refs/heads/master' }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        cd
+        REVCOUNT=`git rev-list --count HEAD`
+        RELEASE_NAME=r${REVCOUNT}
+        TAG_NAME=r${REVCOUNT}
+        # gh release create "${TAG_NAME}" ./*.zip -t "${RELEASE_NAME}"
 
   build:
     runs-on: ubuntu-22.04
