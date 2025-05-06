@@ -15,7 +15,7 @@ i686-w64-mingw32-g++ ifheif.cpp ifheif.def "-Wl,--dll,--enable-stdcall-fixup" -o
 
 などでビルドしてください。
 
-Ubuntuを使用してのクロスコンパイル手順は[build.yml](https://github.com/Mr-Ojii/ifheif/blob/master/.github/workflows/build.yml)をご覧ください。
+MSYS2を用いてのコンパイル手順は[build.yml](https://github.com/Mr-Ojii/ifheif/blob/master/.github/workflows/build.yml)をご覧ください。
 
 ## 注意事項
 + もともとの画像が何bit depthであろうが、8bit depthに変換します。(多分)
