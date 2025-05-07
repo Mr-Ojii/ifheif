@@ -50,27 +50,27 @@ jobs:
         cd
         git clone https://github.com/strukturag/libde265.git -b v1.0.15 --depth 1
         cd libde265
-        sed -e 's/ -static-libstdc++//g' ./dec265/Makefile.am > ./Mf.am
-        mv -f ./Mf.am ./dec265/Makefile.am
+        sed -i -e 's/ -static-libstdc++//g' ./dec265/Makefile.am
         ./autogen.sh
         PKG_CONFIG_PATH=${HOME}/dec/lib/pkgconfig ./configure --prefix=${HOME}/dec --disable-encoder --disable-arm --enable-static --disable-shared
         make -j$(nproc)
         make install -j$(nproc)
+        sed -i -e 's/ @LIBS_PRIVATE@//g' ${HOME}/dec/lib/pkgconfig/libde265.pc
 
     - name: Install libheif
       run: |
         cd
-        git clone https://github.com/strukturag/libheif.git -b v1.15.2 --depth 1
+        git clone https://github.com/strukturag/libheif.git -b v1.19.8 --depth 1
         cd libheif
-        ./autogen.sh
-        PKG_CONFIG_PATH=${HOME}/dec/lib/pkgconfig LDFLAGS="-std=gnu++11" ./configure --prefix=${HOME}/dec --enable-static --disable-shared --disable-gdk-pixbuf --disable-go --disable-examples
-        make -j$(nproc)
-        make install -j$(nproc)
+        mkdir build && cd build
+        CMAKE_PREFIX_PATH=${HOME}/dec cmake --preset=release -DBUILD_SHARED_LIBS=OFF -DWITH_EXAMPLES=OFF -DWITH_GDK_PIXBUF=OFF -DENABLE_PLUGIN_LOADING=OFF -DWITH_HEADER_COMPRESSION=OFF -DWITH_UNCOMPRESSED_CODEC=OFF -DCMAKE_INSTALL_PREFIX=${HOME}/dec ..
+        ninja
+        ninja install
 
     - name: Build ifheif
       run: |
         cd
-        i686-w64-mingw32-g++ src/ifheif.cpp src/ifheif.def "-Wl,--dll,--enable-stdcall-fixup" -o ifheif.spi `PKG_CONFIG_PATH=${HOME}/dec/lib/pkgconfig i686-w64-mingw32-pkg-config --libs --cflags libheif libde265 dav1d` -static -shared
+        i686-w64-mingw32-g++ src/ifheif.cpp src/ifheif.def "-Wl,--dll,--enable-stdcall-fixup" -o ifheif.spi `PKG_CONFIG_PATH=${HOME}/dec/lib/pkgconfig i686-w64-mingw32-pkg-config --libs --static --cflags libheif libde265 dav1d` -static -shared
 
     - name: Add License Files
       run: |
