@@ -216,26 +216,25 @@ int load_heif(void* buf, long len, PictureInfo* info, HLOCAL* data, BOOL decode_
                     struct heif_image* img;
                     if(!heif_decode_image(handle, &img, heif_colorspace_RGB, heif_chroma_interleaved_RGBA, NULL).code) {
                         int stride;
-                        const Pixel_RGBA* img_dat = reinterpret_cast<const Pixel_RGBA*>(heif_image_get_plane_readonly(img, heif_channel_interleaved, &stride));
+                        const uint8_t* b_dat = reinterpret_cast<const uint8_t*>(heif_image_get_plane_readonly(img, heif_channel_interleaved, &stride));
                         *data = LocalAlloc(LMEM_MOVEABLE, info->width * info->height * (info->colorDepth / 8));
                         if(*data) {
                             Pixel_BGRA* dat = reinterpret_cast<Pixel_BGRA*>(LocalLock(*data));
                             for(int i = 0; i < info->height; i++) {
+                                const Pixel_RGBA* img_dat = reinterpret_cast<const Pixel_RGBA*>(&b_dat[(stride * (info->height - i - 1))]);
                                 for(int j = 0; j < info->width; j++) {
-                                    dat[info->width * i + j].b = img_dat[(info->width * (info->height - i - 1)) + j].b;
-                                    dat[info->width * i + j].g = img_dat[(info->width * (info->height - i - 1)) + j].g;
-                                    dat[info->width * i + j].r = img_dat[(info->width * (info->height - i - 1)) + j].r;
-                                    dat[info->width * i + j].a = img_dat[(info->width * (info->height - i - 1)) + j].a;
+                                    dat[info->width * i + j].b = img_dat[j].b;
+                                    dat[info->width * i + j].g = img_dat[j].g;
+                                    dat[info->width * i + j].r = img_dat[j].r;
+                                    dat[info->width * i + j].a = img_dat[j].a;
                                 }
                             }
                             LocalUnlock(*data);
                             ret = 1;
                         }
-
                         heif_image_release(img);
                     }
                 }
-
                 heif_image_handle_release(handle);
             }
         }
