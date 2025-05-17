@@ -53,7 +53,7 @@ jobs:
         cd libde265
         sed -i -e 's/ -static-libstdc++//g' ./dec265/Makefile.am
         ./autogen.sh
-        PKG_CONFIG_PATH=${HOME}/dec/lib/pkgconfig ./configure --prefix=${HOME}/dec --disable-encoder --disable-arm --enable-static --disable-shared
+        PKG_CONFIG_PATH=${HOME}/dec/lib/pkgconfig ./configure --prefix=${HOME}/dec --disable-encoder --disable-arm --enable-static --disable-shared --disable-dec265 --disable-sherlock265
         make -j$(nproc)
         make install -j$(nproc)
         sed -i -e 's/ @LIBS_PRIVATE@//g' ${HOME}/dec/lib/pkgconfig/libde265.pc
