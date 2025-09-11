@@ -96,6 +96,7 @@ jobs:
         path: ${{ steps.msys2.outputs.msys2-location }}/home/runneradmin/*.zip
 
   release:
+    needs: msys-build
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
