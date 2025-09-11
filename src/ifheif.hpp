@@ -14,6 +14,7 @@ static const char* plugin_info[] = {
     "HEIF File(*.heif,*.heic);AVIF File(*.avif)"
 };
 
+#pragma pack(push, 1)
 typedef struct {
     long left, top;
     long width;
@@ -21,8 +22,12 @@ typedef struct {
     WORD x_density;
     WORD y_density;
     short colorDepth;
+#ifdef _WIN64
+    char dummy[2]; // アラインメント合わせ用(64bit版)
+#endif
     HLOCAL hInfo;
 } PictureInfo;
+#pragma pack(pop)
 
 typedef struct {
     uint8_t b, g, r, a;
@@ -46,6 +51,6 @@ static const char* support_brand[] = {
     "avis",
 };
 
-int load_heif(void* buf, long len, PictureInfo* info, HLOCAL* data, BOOL decode_image);
+int load_heif(const void* buf, long len, PictureInfo* info, HLOCAL* data, BOOL decode_image);
 
 #endif

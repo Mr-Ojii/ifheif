@@ -12,19 +12,11 @@ EXTERN_C int __declspec(dllexport) __stdcall GetPluginInfo(int infono, LPSTR buf
     return strlen(buf); 
 }
 
-EXTERN_C int __declspec(dllexport) __stdcall IsSupported(LPSTR filename, DWORD dw) {
-    BYTE buf[2048] = {0}, *data;
-    
-    if( dw & ~0xffff ) {
-        data = reinterpret_cast<BYTE*>(dw);
-    } else {
-        DWORD bytes;
-        if(!ReadFile((HANDLE)dw, buf, sizeof(buf), &bytes, NULL)) {
-            return 0;
-        }
-        SetFilePointer((HANDLE)dw, 0, NULL, FILE_BEGIN);
-        data = buf;
-    }
+EXTERN_C int __declspec(dllexport) __stdcall IsSupported(LPSTR filename, const void* dw) {
+    const BYTE* data;
+
+    // ファイルハンドル指定は使用禁止であるため削除
+    data = reinterpret_cast<const BYTE*>(dw);
 
     uint32_t byte_pos = 0;
     for(uint32_t byte_pos = 0; byte_pos < 2048;) {
@@ -66,8 +58,8 @@ EXTERN_C int __declspec(dllexport) __stdcall IsSupported(LPSTR filename, DWORD d
     return 0;
 }
 
-EXTERN_C int __declspec(dllexport) __stdcall GetPictureInfo(LPSTR buf, long len, unsigned int flag, PictureInfo *lpInfo) {
-    void* data;
+EXTERN_C int __declspec(dllexport) __stdcall GetPictureInfo(LPCSTR buf, LONG_PTR len, unsigned int flag, PictureInfo *lpInfo) {
+    const void* data;
     long length;
     void* bufpoint = NULL;
     int buf_success = FALSE;
@@ -121,9 +113,9 @@ EXTERN_C int __declspec(dllexport) __stdcall GetPictureInfo(LPSTR buf, long len,
     return ret;
 }
 
-EXTERN_C int __declspec(dllexport) __stdcall GetPicture(LPSTR buf, long len, unsigned int flag, HANDLE *pHBInfo, HANDLE *pHBm, FARPROC lpPrgressCallback, long lData) {
+EXTERN_C int __declspec(dllexport) __stdcall GetPicture(LPCSTR buf, LONG_PTR len, unsigned int flag, HLOCAL *pHBInfo, HLOCAL *pHBm, FARPROC lpPrgressCallback, LONG_PTR lData) {
     lpPrgressCallback = NULL;
-    void* data;
+    const void* data;
     long length;
     void* bufpoint = NULL;
     int buf_success = FALSE;
@@ -195,7 +187,7 @@ EXTERN_C int __declspec(dllexport) __stdcall GetPreview(LPSTR buf, long len, uns
     return -1;
 }
 
-int load_heif(void* buf, long len, PictureInfo* info, HLOCAL* data, BOOL decode_image) {
+int load_heif(const void* buf, long len, PictureInfo* info, HLOCAL* data, BOOL decode_image) {
     int ret = 0;
     if (buf != NULL && len != 0) {
         struct heif_context* ctx = heif_context_alloc();

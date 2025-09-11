@@ -9,26 +9,29 @@ jobs:
     defaults:
       run:
         shell: msys2 {0}
+    strategy:
+      matrix:
+        config:
+          - { sys: MINGW32, ext: spi, arch: i686, archive: ifheif }
+          - { sys: MINGW64, ext: sph, arch: x86_64, archive: ifheif64 }
     runs-on: windows-latest
     steps:
     - uses: msys2/setup-msys2@v2
       id: msys2
       with:
         update: true
-        msystem: MINGW32
+        msystem: ${{ matrix.config.sys }}
         install: >-
           git
           autotools
           nasm
           zip
-          mingw-w64-i686-toolchain
-          mingw-w64-i686-meson
-          mingw-w64-i686-cmake
+          mingw-w64-${{ matrix.config.arch }}-toolchain
+          mingw-w64-${{ matrix.config.arch }}-meson
+          mingw-w64-${{ matrix.config.arch }}-cmake
 
     - name: Checkout repository
       uses: actions/checkout@v5
-      with:
-        fetch-depth: 0
 
     - name: Copy all files
       shell: pwsh
@@ -71,7 +74,7 @@ jobs:
     - name: Build ifheif
       run: |
         cd
-        i686-w64-mingw32-g++ src/ifheif.cpp src/ifheif.def "-Wl,--dll,--enable-stdcall-fixup" -o ifheif.spi `PKG_CONFIG_PATH=${HOME}/dec/lib/pkgconfig i686-w64-mingw32-pkg-config --libs --static --cflags libheif libde265 dav1d` -static -shared
+        g++ src/ifheif.cpp src/ifheif.def "-Wl,--dll,--enable-stdcall-fixup" -o ifheif.${{ matrix.config.ext }} `PKG_CONFIG_PATH=${HOME}/dec/lib/pkgconfig pkg-config --libs --static --cflags libheif libde265 dav1d` -static -shared
 
     - name: Add License Files
       run: |
@@ -85,14 +88,25 @@ jobs:
     - name: Create archive
       run: |
         cd
-        zip ifheif -r src LICENSE Readme.md Licenses ifheif.spi
+        zip ${{ matrix.config.archive }} -r src LICENSE Readme.md Licenses ifheif.${{ matrix.config.ext }}
 
-    - name: Copy archive
-      shell: pwsh
-      run: |
-        cd ${{ github.workspace }}
-        cp ${{ steps.msys2.outputs.msys2-location }}/home/runneradmin/*.zip .
-    
+    - uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.config.archive }}
+        path: ${{ steps.msys2.outputs.msys2-location }}/home/runneradmin/*.zip
+
+  release:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+      with:
+        fetch-depth: 0
+
+    - uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+
     # https://gist.github.com/superbrothers/af84a2f8af394a62352e06537a640746        
     - name: Create a Release
       shell: pwsh
@@ -104,4 +118,5 @@ jobs:
         $REVCOUNT=git rev-list --count HEAD
         $RELEASE_NAME="r${REVCOUNT}"
         $TAG_NAME="r${REVCOUNT}"
+        mv ./artifacts/*/*.zip ./
         gh release create "${TAG_NAME}" ./*.zip -t "${RELEASE_NAME}"
