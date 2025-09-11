@@ -12,8 +12,8 @@ jobs:
     strategy:
       matrix:
         config:
-          - { sys: MINGW32, ext: spi, arch: i686, archive: ifheif }
-          - { sys: MINGW64, ext: sph, arch: x86_64, archive: ifheif64 }
+          - { sys: MINGW32, ext: spi, arch: i686, archive: ifheif_x86 }
+          - { sys: MINGW64, ext: sph, arch: x86_64, archive: ifheif_x64 }
     runs-on: windows-latest
     steps:
     - uses: msys2/setup-msys2@v2
