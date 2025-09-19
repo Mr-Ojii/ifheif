@@ -102,8 +102,7 @@ EXTERN_C int __declspec(dllexport) __stdcall GetPictureInfo(LPCSTR buf, LONG_PTR
     }
 
     if(buf_success) {
-        HLOCAL hl;
-        if(load_heif(data, length, lpInfo, &hl, FALSE)) {
+        if(load_heif(data, length, lpInfo, NULL)) {
             ret = SUSIE_SUCCESS;
         } else {
             ret = SUSIE_UNKNOWN_FORMAT;
@@ -160,7 +159,7 @@ EXTERN_C int __declspec(dllexport) __stdcall GetPicture(LPCSTR buf, LONG_PTR len
     if(buf_success) {
         PictureInfo info;
         HLOCAL pic_data;
-        if(load_heif(data, length, &info, &pic_data, TRUE)) {
+        if(load_heif(data, length, &info, &pic_data)) {
             *pHBInfo = LocalAlloc(LMEM_MOVEABLE, sizeof(BITMAPINFO));
             BITMAPINFO* pinfo = reinterpret_cast<BITMAPINFO*>(LocalLock(*pHBInfo));
 
@@ -191,7 +190,7 @@ EXTERN_C int __declspec(dllexport) __stdcall GetPreview(LPSTR buf, long len, uns
     return -1;
 }
 
-int load_heif(const void* buf, long len, PictureInfo* info, HLOCAL* data, BOOL decode_image) {
+int load_heif(const void* buf, long len, PictureInfo* info, HLOCAL* data) {
     int ret = 0;
     if (buf != NULL && len != 0) {
         struct heif_context* ctx = heif_context_alloc();
@@ -208,7 +207,7 @@ int load_heif(const void* buf, long len, PictureInfo* info, HLOCAL* data, BOOL d
                 info->colorDepth = 32;
                 info->hInfo      = NULL;
 
-                if(decode_image) {
+                if(data) {
                     struct heif_image* img;
                     if(!heif_decode_image(handle, &img, heif_colorspace_RGB, heif_chroma_interleaved_RGBA, NULL).code) {
                         int stride;

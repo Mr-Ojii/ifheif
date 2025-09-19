@@ -65,6 +65,6 @@ static const char* support_brand[] = {
     "avis",
 };
 
-int load_heif(const void* buf, long len, PictureInfo* info, HLOCAL* data, BOOL decode_image);
+int load_heif(const void* buf, long len, PictureInfo* info, HLOCAL* data);
 
 #endif
