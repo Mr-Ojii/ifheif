@@ -29,6 +29,20 @@ typedef struct {
 } PictureInfo;
 #pragma pack(pop)
 
+enum SUSIE_ERROR {
+    SUSIE_SUCCESS = 0,
+    SUSIE_NOT_IMPLEMENTED = -1,
+    SUSIE_ABORT = 1,
+    SUSIE_UNKNOWN_FORMAT = 2,
+    SUSIE_BROKEN_DATA = 3,
+    SUSIE_FAILED_ALLOC_MEMORY = 4,
+    SUSIE_GENERIC_MEMORY_ERROR = 5,
+    SUSIE_FILE_READ_ERROR = 6,
+    SUSIE_RESERVED = 7,
+    SUSIE_INTERNAL_ERROR = 8,
+    SUSIE_FILE_WRITE_ERROR = 9,
+};
+
 typedef struct {
     uint8_t b, g, r, a;
 } Pixel_BGRA;

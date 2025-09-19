@@ -63,7 +63,7 @@ EXTERN_C int __declspec(dllexport) __stdcall GetPictureInfo(LPCSTR buf, LONG_PTR
     long length;
     void* bufpoint = NULL;
     int buf_success = FALSE;
-    int ret = 1;
+    int ret = SUSIE_INTERNAL_ERROR;
 
     if((flag & 0b111) == 0) {
         HANDLE handle = CreateFile(buf, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -78,18 +78,18 @@ EXTERN_C int __declspec(dllexport) __stdcall GetPictureInfo(LPCSTR buf, LONG_PTR
                         length = readsize;
                         buf_success = TRUE;
                     } else {
-                        ret = 1;
+                        ret = SUSIE_FILE_READ_ERROR;
                     }
                 } else {
-                    ret = 4;
+                    ret = SUSIE_FAILED_ALLOC_MEMORY;
                 }
             } else {
-                ret = 6;
+                ret = SUSIE_FILE_READ_ERROR;
             }
 
             CloseHandle(handle);
         } else {
-            ret = 6;
+            ret = SUSIE_FILE_READ_ERROR;
         }
     } else {
         data = buf;
@@ -100,12 +100,12 @@ EXTERN_C int __declspec(dllexport) __stdcall GetPictureInfo(LPCSTR buf, LONG_PTR
     if(buf_success) {
         HLOCAL hl;
         if(load_heif(data, length, lpInfo, &hl, FALSE)) {
-            ret = 0;
+            ret = SUSIE_SUCCESS;
         } else {
-            ret = 2;
+            ret = SUSIE_UNKNOWN_FORMAT;
         }
     } else {
-        ret = 4;
+        ret = SUSIE_FAILED_ALLOC_MEMORY;
     }
 
     free(bufpoint);
@@ -119,7 +119,7 @@ EXTERN_C int __declspec(dllexport) __stdcall GetPicture(LPCSTR buf, LONG_PTR len
     long length;
     void* bufpoint = NULL;
     int buf_success = FALSE;
-    int ret = 1;
+    int ret = SUSIE_INTERNAL_ERROR;
 
     if((flag & 0b111) == 0) {
         HANDLE handle = CreateFile(buf, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -134,18 +134,18 @@ EXTERN_C int __declspec(dllexport) __stdcall GetPicture(LPCSTR buf, LONG_PTR len
                         length = readsize;
                         buf_success = TRUE;
                     } else {
-                        ret = 1;
+                        ret = SUSIE_FILE_READ_ERROR;
                     }
                 } else {
-                    ret = 4;
+                    ret = SUSIE_FAILED_ALLOC_MEMORY;
                 }
             } else {
-                ret = 6;
+                ret = SUSIE_FILE_READ_ERROR;
             }
 
             CloseHandle(handle);
         } else {
-            ret = 6;
+            ret = SUSIE_FILE_READ_ERROR;
         }
     } else {
         data = buf;
@@ -176,7 +176,7 @@ EXTERN_C int __declspec(dllexport) __stdcall GetPicture(LPCSTR buf, LONG_PTR len
 
             *pHBm = pic_data;
 
-            ret = 0;
+            ret = SUSIE_SUCCESS;
         }
     }
     free(bufpoint);
