@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <algorithm>
 #include <libheif/heif.h>
 #include <windows.h>
 #include "ifheif.hpp"
@@ -7,9 +8,12 @@ EXTERN_C int __declspec(dllexport) __stdcall GetPluginInfo(int infono, LPSTR buf
     if (infono < 0 || infono >= sizeof(plugin_info) / sizeof(plugin_info[0]))
         return 0;
 
-    strcpy(buf, plugin_info[infono]);
+    const char* info = plugin_info[infono];
+    memset(buf, 0, buflen);
+    int cpbytes = std::min((int)strlen(info), buflen);
+    memcpy(buf, info, cpbytes);
 
-    return strlen(buf); 
+    return cpbytes;
 }
 
 EXTERN_C int __declspec(dllexport) __stdcall IsSupported(LPSTR filename, const void* dw) {
