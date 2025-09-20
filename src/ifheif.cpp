@@ -66,49 +66,24 @@ EXTERN_C int __declspec(dllexport) __stdcall GetPictureInfo(LPCSTR buf, LONG_PTR
     const void* data;
     long length;
     void* bufpoint = NULL;
-    int buf_success = FALSE;
     int ret = SUSIE_INTERNAL_ERROR;
 
     if((flag & 0b111) == 0) {
-        HANDLE handle = CreateFile(buf, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-        if (handle != INVALID_HANDLE_VALUE) {
-            DWORD filesize = GetFileSize(handle, NULL);
-            DWORD readsize;
-            if (filesize != 0) {
-                bufpoint = malloc(filesize);
-                if(bufpoint){
-                    if (ReadFile(handle, bufpoint, filesize, &readsize, NULL)) {
-                        data = bufpoint;
-                        length = readsize;
-                        buf_success = TRUE;
-                    } else {
-                        ret = SUSIE_FILE_READ_ERROR;
-                    }
-                } else {
-                    ret = SUSIE_FAILED_ALLOC_MEMORY;
-                }
-            } else {
-                ret = SUSIE_FILE_READ_ERROR;
-            }
-
-            CloseHandle(handle);
-        } else {
-            ret = SUSIE_FILE_READ_ERROR;
-        }
+        long readsize;
+        ret = read_file_a(buf, &bufpoint, &readsize);
+        if (ret != SUSIE_SUCCESS)
+            return ret;
+        data = bufpoint;
+        length = readsize;
     } else {
         data = buf;
         length = len;
-        buf_success = TRUE;
     }
 
-    if(buf_success) {
-        if(load_heif(data, length, lpInfo, NULL)) {
-            ret = SUSIE_SUCCESS;
-        } else {
-            ret = SUSIE_UNKNOWN_FORMAT;
-        }
+    if(load_heif(data, length, lpInfo, NULL)) {
+        ret = SUSIE_SUCCESS;
     } else {
-        ret = SUSIE_FAILED_ALLOC_MEMORY;
+        ret = SUSIE_UNKNOWN_FORMAT;
     }
 
     free(bufpoint);
@@ -121,66 +96,45 @@ EXTERN_C int __declspec(dllexport) __stdcall GetPicture(LPCSTR buf, LONG_PTR len
     const void* data;
     long length;
     void* bufpoint = NULL;
-    int buf_success = FALSE;
     int ret = SUSIE_INTERNAL_ERROR;
 
     if((flag & 0b111) == 0) {
-        HANDLE handle = CreateFile(buf, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-        if (handle != INVALID_HANDLE_VALUE) {
-            DWORD filesize = GetFileSize(handle, NULL);
-            DWORD readsize;
-            if (filesize != 0) {
-                bufpoint = malloc(filesize);
-                if(bufpoint){
-                    if (ReadFile(handle, bufpoint, filesize, &readsize, NULL)) {
-                        data = bufpoint;
-                        length = readsize;
-                        buf_success = TRUE;
-                    } else {
-                        ret = SUSIE_FILE_READ_ERROR;
-                    }
-                } else {
-                    ret = SUSIE_FAILED_ALLOC_MEMORY;
-                }
-            } else {
-                ret = SUSIE_FILE_READ_ERROR;
-            }
-
-            CloseHandle(handle);
-        } else {
-            ret = SUSIE_FILE_READ_ERROR;
-        }
+        long readsize;
+        ret = read_file_a(buf, &bufpoint, &readsize);
+        if (ret != SUSIE_SUCCESS)
+            return ret;
+        data = bufpoint;
+        length = readsize;
     } else {
         data = buf;
         length = len;
-        buf_success = TRUE;
     }
 
-    if(buf_success) {
-        PictureInfo info;
-        HLOCAL pic_data;
-        if(load_heif(data, length, &info, &pic_data)) {
-            *pHBInfo = LocalAlloc(LMEM_MOVEABLE, sizeof(BITMAPINFO));
-            BITMAPINFO* pinfo = reinterpret_cast<BITMAPINFO*>(LocalLock(*pHBInfo));
+    PictureInfo info;
+    HLOCAL pic_data;
+    if(load_heif(data, length, &info, &pic_data)) {
+        *pHBInfo = LocalAlloc(LMEM_MOVEABLE, sizeof(BITMAPINFO));
+        BITMAPINFO* pinfo = reinterpret_cast<BITMAPINFO*>(LocalLock(*pHBInfo));
 
-            pinfo->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-            pinfo->bmiHeader.biWidth = info.width;
-            pinfo->bmiHeader.biHeight = info.height;
-            pinfo->bmiHeader.biPlanes = 1;
-            pinfo->bmiHeader.biBitCount = info.colorDepth;
-            pinfo->bmiHeader.biCompression = BI_RGB;
-            pinfo->bmiHeader.biSizeImage = 0;
-            pinfo->bmiHeader.biXPelsPerMeter = 0;
-            pinfo->bmiHeader.biYPelsPerMeter = 0;
-            pinfo->bmiHeader.biClrUsed = 0;
-            pinfo->bmiHeader.biClrImportant = 0;
-            
-            LocalUnlock(*pHBInfo);
+        pinfo->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+        pinfo->bmiHeader.biWidth = info.width;
+        pinfo->bmiHeader.biHeight = info.height;
+        pinfo->bmiHeader.biPlanes = 1;
+        pinfo->bmiHeader.biBitCount = info.colorDepth;
+        pinfo->bmiHeader.biCompression = BI_RGB;
+        pinfo->bmiHeader.biSizeImage = 0;
+        pinfo->bmiHeader.biXPelsPerMeter = 0;
+        pinfo->bmiHeader.biYPelsPerMeter = 0;
+        pinfo->bmiHeader.biClrUsed = 0;
+        pinfo->bmiHeader.biClrImportant = 0;
+        
+        LocalUnlock(*pHBInfo);
 
-            *pHBm = pic_data;
+        *pHBm = pic_data;
 
-            ret = SUSIE_SUCCESS;
-        }
+        ret = SUSIE_SUCCESS;
+    } else {
+        ret = SUSIE_UNKNOWN_FORMAT;
     }
     free(bufpoint);
     return ret;
@@ -188,6 +142,43 @@ EXTERN_C int __declspec(dllexport) __stdcall GetPicture(LPCSTR buf, LONG_PTR len
 
 EXTERN_C int __declspec(dllexport) __stdcall GetPreview(LPSTR buf, long len, unsigned int flag, HANDLE *pHBInfo, HANDLE *pHBm, FARPROC loPrgressCallback, long lData) {
     return -1;
+}
+
+int read_file(HANDLE handle, void** buf, long* len) {
+    if (handle == INVALID_HANDLE_VALUE)
+        return SUSIE_FILE_READ_ERROR;
+
+    DWORD filesize = GetFileSize(handle, NULL);
+    if (filesize == 0)
+        return SUSIE_FILE_READ_ERROR;
+
+    void* buf_ptr = malloc(filesize);
+    if (!buf_ptr)
+        return SUSIE_FAILED_ALLOC_MEMORY;
+
+    DWORD readsize;
+    if (!ReadFile(handle, buf_ptr, filesize, &readsize, NULL)) {
+        free(buf_ptr);
+        return SUSIE_FILE_READ_ERROR;
+    }
+
+    *buf = buf_ptr;
+    *len = readsize;
+    return SUSIE_SUCCESS;
+}
+
+int read_file_a(LPCSTR filename, void** buf, long* len) {
+    HANDLE handle = CreateFileA(filename, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    int ret = read_file(handle, buf, len);
+    CloseHandle(handle);
+    return ret;
+}
+
+int read_file_w(LPCWSTR filename, void **buf, long *len) {
+    HANDLE handle = CreateFileW(filename, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    int ret = read_file(handle, buf, len);
+    CloseHandle(handle);
+    return ret;
 }
 
 int load_heif(const void* buf, long len, PictureInfo* info, HLOCAL* data) {
