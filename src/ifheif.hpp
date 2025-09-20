@@ -65,6 +65,7 @@ static const char* support_brand[] = {
     "avis",
 };
 
+void copy_pinfo_to_bminfo(const PictureInfo* pinfo, BITMAPINFO* bminfo);
 int read_file(HANDLE handle, void** buf, long* len);
 int read_file_a(LPCSTR filename, void** buf, long* len);
 int read_file_w(LPCWSTR filename, void** buf, long* len);

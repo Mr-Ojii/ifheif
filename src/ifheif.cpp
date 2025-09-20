@@ -62,6 +62,10 @@ EXTERN_C int __declspec(dllexport) __stdcall IsSupported(LPSTR filename, const v
     return 0;
 }
 
+EXTERN_C int __declspec(dllexport) __stdcall IsSupportedW(LPWSTR filename, const void* dw) {
+    return IsSupported(NULL, dw);
+}
+
 EXTERN_C int __declspec(dllexport) __stdcall GetPictureInfo(LPCSTR buf, LONG_PTR len, unsigned int flag, PictureInfo *lpInfo) {
     const void* data;
     long length;
@@ -71,6 +75,35 @@ EXTERN_C int __declspec(dllexport) __stdcall GetPictureInfo(LPCSTR buf, LONG_PTR
     if((flag & 0b111) == 0) {
         long readsize;
         ret = read_file_a(buf, &bufpoint, &readsize);
+        if (ret != SUSIE_SUCCESS)
+            return ret;
+        data = bufpoint;
+        length = readsize;
+    } else {
+        data = buf;
+        length = len;
+    }
+
+    if(load_heif(data, length, lpInfo, NULL)) {
+        ret = SUSIE_SUCCESS;
+    } else {
+        ret = SUSIE_UNKNOWN_FORMAT;
+    }
+
+    free(bufpoint);
+
+    return ret;
+}
+
+EXTERN_C int __declspec(dllexport) __stdcall GetPictureInfoW(LPCWSTR buf, LONG_PTR len, unsigned int flag, PictureInfo *lpInfo) {
+    const void* data;
+    long length;
+    void* bufpoint = NULL;
+    int ret = SUSIE_INTERNAL_ERROR;
+
+    if((flag & 0b111) == 0) {
+        long readsize;
+        ret = read_file_w(buf, &bufpoint, &readsize);
         if (ret != SUSIE_SUCCESS)
             return ret;
         data = bufpoint;
@@ -114,24 +147,45 @@ EXTERN_C int __declspec(dllexport) __stdcall GetPicture(LPCSTR buf, LONG_PTR len
     HLOCAL pic_data;
     if(load_heif(data, length, &info, &pic_data)) {
         *pHBInfo = LocalAlloc(LMEM_MOVEABLE, sizeof(BITMAPINFO));
-        BITMAPINFO* pinfo = reinterpret_cast<BITMAPINFO*>(LocalLock(*pHBInfo));
-
-        pinfo->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-        pinfo->bmiHeader.biWidth = info.width;
-        pinfo->bmiHeader.biHeight = info.height;
-        pinfo->bmiHeader.biPlanes = 1;
-        pinfo->bmiHeader.biBitCount = info.colorDepth;
-        pinfo->bmiHeader.biCompression = BI_RGB;
-        pinfo->bmiHeader.biSizeImage = 0;
-        pinfo->bmiHeader.biXPelsPerMeter = 0;
-        pinfo->bmiHeader.biYPelsPerMeter = 0;
-        pinfo->bmiHeader.biClrUsed = 0;
-        pinfo->bmiHeader.biClrImportant = 0;
-        
+        BITMAPINFO* bminfo = reinterpret_cast<BITMAPINFO*>(LocalLock(*pHBInfo));
+        copy_pinfo_to_bminfo(&info, bminfo);
         LocalUnlock(*pHBInfo);
-
         *pHBm = pic_data;
+        ret = SUSIE_SUCCESS;
+    } else {
+        ret = SUSIE_UNKNOWN_FORMAT;
+    }
+    free(bufpoint);
+    return ret;
+}
 
+EXTERN_C int __declspec(dllexport) __stdcall GetPictureW(LPCWSTR buf, LONG_PTR len, unsigned int flag, HLOCAL *pHBInfo, HLOCAL *pHBm, FARPROC lpPrgressCallback, LONG_PTR lData) {
+    lpPrgressCallback = NULL;
+    const void* data;
+    long length;
+    void* bufpoint = NULL;
+    int ret = SUSIE_INTERNAL_ERROR;
+
+    if((flag & 0b111) == 0) {
+        long readsize;
+        ret = read_file_w(buf, &bufpoint, &readsize);
+        if (ret != SUSIE_SUCCESS)
+            return ret;
+        data = bufpoint;
+        length = readsize;
+    } else {
+        data = buf;
+        length = len;
+    }
+
+    PictureInfo info;
+    HLOCAL pic_data;
+    if(load_heif(data, length, &info, &pic_data)) {
+        *pHBInfo = LocalAlloc(LMEM_MOVEABLE, sizeof(BITMAPINFO));
+        BITMAPINFO* bminfo = reinterpret_cast<BITMAPINFO*>(LocalLock(*pHBInfo));
+        copy_pinfo_to_bminfo(&info, bminfo);
+        LocalUnlock(*pHBInfo);
+        *pHBm = pic_data;
         ret = SUSIE_SUCCESS;
     } else {
         ret = SUSIE_UNKNOWN_FORMAT;
@@ -142,6 +196,24 @@ EXTERN_C int __declspec(dllexport) __stdcall GetPicture(LPCSTR buf, LONG_PTR len
 
 EXTERN_C int __declspec(dllexport) __stdcall GetPreview(LPSTR buf, long len, unsigned int flag, HANDLE *pHBInfo, HANDLE *pHBm, FARPROC loPrgressCallback, long lData) {
     return -1;
+}
+
+EXTERN_C int __declspec(dllexport) __stdcall GetPreviewW(LPWSTR buf, long len, unsigned int flag, HANDLE *pHBInfo, HANDLE *pHBm, FARPROC loPrgressCallback, long lData) {
+    return -1;
+}
+
+void copy_pinfo_to_bminfo(const PictureInfo* pinfo, BITMAPINFO* bminfo) {
+    bminfo->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bminfo->bmiHeader.biWidth = pinfo->width;
+    bminfo->bmiHeader.biHeight = pinfo->height;
+    bminfo->bmiHeader.biPlanes = 1;
+    bminfo->bmiHeader.biBitCount = pinfo->colorDepth;
+    bminfo->bmiHeader.biCompression = BI_RGB;
+    bminfo->bmiHeader.biSizeImage = 0;
+    bminfo->bmiHeader.biXPelsPerMeter = 0;
+    bminfo->bmiHeader.biYPelsPerMeter = 0;
+    bminfo->bmiHeader.biClrUsed = 0;
+    bminfo->bmiHeader.biClrImportant = 0;
 }
 
 int read_file(HANDLE handle, void** buf, long* len) {
