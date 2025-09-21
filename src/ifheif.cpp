@@ -72,7 +72,7 @@ EXTERN_C int __declspec(dllexport) __stdcall IsSupported(LPSTR filename, const v
         byte_pos += (size - 8);
     }
 
-    return 0;
+    return SUSIE_SUCCESS;
 }
 
 EXTERN_C int __declspec(dllexport) __stdcall IsSupportedW(LPWSTR filename, const void* dw) {
