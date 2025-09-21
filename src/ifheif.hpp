@@ -14,6 +14,13 @@ static const char* plugin_info[] = {
     "HEIF File(*.heif,*.heic);AVIF File(*.avif)"
 };
 
+static const wchar_t* plugin_info_w[] = {
+    L"00IN",
+    L"HEIF AVIF Reader by Mr-Ojii",
+    L"*.heif;*.heic;*.avif",
+    L"HEIF File(*.heif,*.heic);AVIF File(*.avif)"
+};
+
 #pragma pack(push, 1)
 typedef struct {
     long left, top;

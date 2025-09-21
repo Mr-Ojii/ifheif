@@ -16,6 +16,19 @@ EXTERN_C int __declspec(dllexport) __stdcall GetPluginInfo(int infono, LPSTR buf
     return cpbytes;
 }
 
+EXTERN_C int __declspec(dllexport) __stdcall GetPluginInfoW(int infono, LPWSTR buf, int buflen) {
+    if (infono < 0 || infono >= sizeof(plugin_info_w) / sizeof(plugin_info_w[0]))
+        return 0;
+
+    // 「buf の長さ」という表記、バイト数か文字数かわかりづらいが、ret が文字数であるため文字数と解釈する
+    const wchar_t* info = plugin_info_w[infono];
+    memset(buf, 0, buflen * sizeof(wchar_t));
+    int cplength = std::min((int)wcslen(info), buflen);
+    memcpy(buf, info, cplength * sizeof(wchar_t));
+
+    return cplength;
+}
+
 EXTERN_C int __declspec(dllexport) __stdcall IsSupported(LPSTR filename, const void* dw) {
     const BYTE* data;
 
