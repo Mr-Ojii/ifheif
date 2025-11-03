@@ -90,7 +90,7 @@ jobs:
         cd
         zip ${{ matrix.config.archive }} -r src LICENSE Readme.md Licenses ifheif.${{ matrix.config.ext }}
 
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v5
       with:
         name: ${{ matrix.config.archive }}
         path: ${{ steps.msys2.outputs.msys2-location }}/home/runneradmin/*.zip
@@ -104,7 +104,7 @@ jobs:
       with:
         fetch-depth: 0
 
-    - uses: actions/download-artifact@v4
+    - uses: actions/download-artifact@v6
       with:
         path: artifacts
 
@@ -121,3 +121,4 @@ jobs:
         $TAG_NAME="r${REVCOUNT}"
         mv ./artifacts/*/*.zip ./
         gh release create "${TAG_NAME}" ./*.zip -t "${RELEASE_NAME}"
+
