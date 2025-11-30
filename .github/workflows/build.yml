@@ -42,7 +42,7 @@ jobs:
     - name: Install dav1d
       run: |
         cd
-        git clone https://code.videolan.org/videolan/dav1d.git -b 1.5.1 --depth 1
+        git clone https://code.videolan.org/videolan/dav1d.git -b 1.5.2 --depth 1
         cd dav1d
         mkdir build && cd build
         meson --prefix=${HOME}/dec --buildtype release --default-library=static ..
@@ -121,4 +121,5 @@ jobs:
         $TAG_NAME="r${REVCOUNT}"
         mv ./artifacts/*/*.zip ./
         gh release create "${TAG_NAME}" ./*.zip -t "${RELEASE_NAME}"
+
 
