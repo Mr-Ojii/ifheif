@@ -90,7 +90,7 @@ jobs:
         cd
         zip ${{ matrix.config.archive }} -r src LICENSE Readme.md Licenses ifheif.${{ matrix.config.ext }}
 
-    - uses: actions/upload-artifact@v5
+    - uses: actions/upload-artifact@v6
       with:
         name: ${{ matrix.config.archive }}
         path: ${{ steps.msys2.outputs.msys2-location }}/home/runneradmin/*.zip
