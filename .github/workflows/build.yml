@@ -64,7 +64,7 @@ jobs:
     - name: Install libheif
       run: |
         cd
-        git clone https://github.com/strukturag/libheif.git -b v1.19.8 --depth 1
+        git clone https://github.com/strukturag/libheif.git -b v1.21.2 --depth 1
         cd libheif
         mkdir build && cd build
         CMAKE_PREFIX_PATH=${HOME}/dec cmake --preset=release -DBUILD_SHARED_LIBS=OFF -DWITH_EXAMPLES=OFF -DWITH_GDK_PIXBUF=OFF -DENABLE_PLUGIN_LOADING=OFF -DWITH_HEADER_COMPRESSION=OFF -DWITH_UNCOMPRESSED_CODEC=OFF -DCMAKE_INSTALL_PREFIX=${HOME}/dec ..
