@@ -42,7 +42,7 @@ jobs:
     - name: Install dav1d
       run: |
         cd
-        git clone https://code.videolan.org/videolan/dav1d.git -b 1.5.2 --depth 1
+        git clone https://code.videolan.org/videolan/dav1d.git -b 1.5.3 --depth 1
         cd dav1d
         mkdir build && cd build
         meson --prefix=${HOME}/dec --buildtype release --default-library=static ..
