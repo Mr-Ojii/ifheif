@@ -51,21 +51,18 @@ jobs:
     - name: Install libde265
       run: |
         cd
-        git clone https://github.com/strukturag/libde265.git -b v1.0.15 --depth 1
+        git clone https://github.com/strukturag/libde265.git -b v1.1.1 --depth 1
         cd libde265
-        sed -i -e 's/ -static-libstdc++//g' ./dec265/Makefile.am
-        ./autogen.sh
-        PKG_CONFIG_PATH=${HOME}/dec/lib/pkgconfig ./configure --prefix=${HOME}/dec --disable-encoder --disable-arm --enable-static --disable-shared --disable-dec265 --disable-sherlock265
-        make -j$(nproc)
-        make install -j$(nproc)
-        sed -i -e 's/ @LIBS_PRIVATE@//g' ${HOME}/dec/lib/pkgconfig/libde265.pc
+        cmake -B build --preset=release -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX=${HOME}/dec .
+        ninja -C build
+        ninja install -C build
 
     - name: Install libheif
       run: |
         cd
         git clone https://github.com/strukturag/libheif.git -b v1.23.2 --depth 1
         cd libheif
-        CMAKE_PREFIX_PATH=${HOME}/dec cmake -B build --preset=release -DBUILD_SHARED_LIBS=OFF -DWITH_EXAMPLES=OFF -DWITH_GDK_PIXBUF=OFF -DENABLE_PLUGIN_LOADING=OFF -DWITH_HEADER_COMPRESSION=OFF -DWITH_UNCOMPRESSED_CODEC=OFF -DCMAKE_INSTALL_PREFIX=${HOME}/dec .
+        CMAKE_PREFIX_PATH=${HOME}/dec cmake -B build --preset=release -DBUILD_SHARED_LIBS=OFF -DWITH_EXAMPLES=OFF -DWITH_GDK_PIXBUF=OFF -DENABLE_PLUGIN_LOADING=OFF -DWITH_HEADER_COMPRESSION=OFF -DWITH_UNCOMPRESSED_CODEC=OFF -DCMAKE_INSTALL_PREFIX=${HOME}/dec -DCMAKE_CXX_FLAGS="-DLIBDE265_STATIC_BUILD" -DCMAKE_C_FLAGS="-DLIBDE265_STATIC_BUILD"  .
         ninja -C build
         ninja install -C build
 
