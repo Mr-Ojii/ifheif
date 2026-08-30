@@ -44,10 +44,9 @@ jobs:
         cd
         git clone https://code.videolan.org/videolan/dav1d.git -b 1.5.3 --depth 1
         cd dav1d
-        mkdir build && cd build
-        meson --prefix=${HOME}/dec --buildtype release --default-library=static ..
-        ninja
-        ninja install
+        meson setup --prefix=${HOME}/dec --buildtype release --default-library=static build
+        ninja -C build
+        ninja install -C build
 
     - name: Install libde265
       run: |
@@ -66,15 +65,14 @@ jobs:
         cd
         git clone https://github.com/strukturag/libheif.git -b v1.21.2 --depth 1
         cd libheif
-        mkdir build && cd build
-        CMAKE_PREFIX_PATH=${HOME}/dec cmake --preset=release -DBUILD_SHARED_LIBS=OFF -DWITH_EXAMPLES=OFF -DWITH_GDK_PIXBUF=OFF -DENABLE_PLUGIN_LOADING=OFF -DWITH_HEADER_COMPRESSION=OFF -DWITH_UNCOMPRESSED_CODEC=OFF -DCMAKE_INSTALL_PREFIX=${HOME}/dec ..
-        ninja
-        ninja install
+        CMAKE_PREFIX_PATH=${HOME}/dec cmake -B build --preset=release -DBUILD_SHARED_LIBS=OFF -DWITH_EXAMPLES=OFF -DWITH_GDK_PIXBUF=OFF -DENABLE_PLUGIN_LOADING=OFF -DWITH_HEADER_COMPRESSION=OFF -DWITH_UNCOMPRESSED_CODEC=OFF -DCMAKE_INSTALL_PREFIX=${HOME}/dec .
+        ninja -C build
+        ninja install -C build
 
     - name: Build ifheif
       run: |
         cd
-        g++ src/ifheif.cpp src/ifheif.def "-Wl,--dll,--enable-stdcall-fixup" -o ifheif.${{ matrix.config.ext }} `PKG_CONFIG_PATH=${HOME}/dec/lib/pkgconfig pkg-config --libs --static --cflags libheif libde265 dav1d` -static -shared
+        g++ src/ifheif.cpp src/ifheif.def "-Wl,--dll,--enable-stdcall-fixup" -o ifheif.${{ matrix.config.ext }} $(PKG_CONFIG_PATH=${HOME}/dec/lib/pkgconfig pkg-config --libs --static --cflags libheif libde265 dav1d) -static -shared
 
     - name: Add License Files
       run: |
