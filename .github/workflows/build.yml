@@ -5,75 +5,62 @@ on:
   
 
 jobs:
-  msys-build:
-    defaults:
-      run:
-        shell: msys2 {0}
+  msvc-build:
     strategy:
       matrix:
         config:
-          - { sys: MINGW32, ext: spi, arch: i686, archive: ifheif_x86 }
-          - { sys: MINGW64, ext: sph, arch: x86_64, archive: ifheif_x64 }
+          - { ext: spi, arch: x86, archive: ifheif_x86 }
+          - { ext: sph, arch: x64, archive: ifheif_x64 }
     runs-on: windows-latest
     steps:
-    - uses: msys2/setup-msys2@v2
-      id: msys2
-      with:
-        update: true
-        msystem: ${{ matrix.config.sys }}
-        install: >-
-          git
-          autotools
-          nasm
-          zip
-          mingw-w64-${{ matrix.config.arch }}-toolchain
-          mingw-w64-${{ matrix.config.arch }}-meson
-          mingw-w64-${{ matrix.config.arch }}-cmake
-
     - name: Checkout repository
       uses: actions/checkout@v6
-
-    - name: Copy all files
+      
+    - uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: ${{ matrix.config.arch }}
+    
+    - name: Install dav1d
       shell: pwsh
       run: |
         cd ${{ github.workspace }}
-        cp -r ./* ${{ steps.msys2.outputs.msys2-location }}/home/runneradmin
-    
-    - name: Install dav1d
-      run: |
-        cd
         git clone https://code.videolan.org/videolan/dav1d.git -b 1.5.4 --depth 1
         cd dav1d
-        meson setup --prefix=${HOME}/dec --buildtype release --default-library=static build
+        meson setup --prefix="${HOME}/dec" --buildtype release --default-library=static -Db_vscrt=mt build
         ninja -C build
         ninja install -C build
 
     - name: Install libde265
+      shell: pwsh
       run: |
-        cd
-        git clone https://github.com/strukturag/libde265.git -b v1.1.1 --depth 1
+        cd ${{ github.workspace }}
+        git clone https://github.com/strukturag/libde265.git -b v1.1.0 --depth 1
         cd libde265
-        cmake -B build --preset=release -DBUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX=${HOME}/dec .
-        ninja -C build
-        ninja install -C build
+        cmake -B build --preset=release -DBUILD_SHARED_LIBS=OFF -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded -DCMAKE_INSTALL_PREFIX="${HOME}/dec" .
+        cmake --build build --config Release --parallel
+        cmake --install build --config Release
 
     - name: Install libheif
+      shell: pwsh
       run: |
-        cd
+        cd ${{ github.workspace }}
         git clone https://github.com/strukturag/libheif.git -b v1.23.2 --depth 1
         cd libheif
-        CMAKE_PREFIX_PATH=${HOME}/dec cmake -B build --preset=release -DBUILD_SHARED_LIBS=OFF -DWITH_EXAMPLES=OFF -DWITH_GDK_PIXBUF=OFF -DENABLE_PLUGIN_LOADING=OFF -DWITH_HEADER_COMPRESSION=OFF -DWITH_UNCOMPRESSED_CODEC=OFF -DCMAKE_INSTALL_PREFIX=${HOME}/dec -DCMAKE_CXX_FLAGS="-DLIBDE265_STATIC_BUILD" -DCMAKE_C_FLAGS="-DLIBDE265_STATIC_BUILD"  .
-        ninja -C build
-        ninja install -C build
+        $Env:CMAKE_PREFIX_PATH="${HOME}/dec"
+        cmake -B build --preset=release -DBUILD_SHARED_LIBS=OFF -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded -DWITH_EXAMPLES=OFF -DWITH_GDK_PIXBUF=OFF -DENABLE_PLUGIN_LOADING=OFF -DWITH_HEADER_COMPRESSION=OFF -DWITH_UNCOMPRESSED_CODEC=OFF -DCMAKE_INSTALL_PREFIX="${HOME}/dec" -DCMAKE_CXX_FLAGS="/DLIBDE265_STATIC_BUILD" -DCMAKE_C_FLAGS="/DLIBDE265_STATIC_BUILD"  .
+        cmake --build build --config Release --parallel
+        cmake --install build --config Release
 
     - name: Build ifheif
+      shell: pwsh
       run: |
-        cd
-        g++ src/ifheif.cpp src/ifheif.def "-Wl,--dll,--enable-stdcall-fixup" -o ifheif.${{ matrix.config.ext }} $(PKG_CONFIG_PATH=${HOME}/dec/lib/pkgconfig pkg-config --libs --static --cflags libheif libde265 dav1d) -static -shared
+        cd ${{ github.workspace }}
+        cl src/ifheif.cpp src/ifheif.def /I"${HOME}/dec/include" heif.lib libde265.lib libdav1d.a /MT /LD /DLIBDE265_STATIC_BUILD /DLIBHEIF_STATIC_BUILD /utf-8 /link /OUT:ifheif.${{ matrix.config.ext }} /LIBPATH:"${HOME}/dec/lib"
 
     - name: Add License Files
+      shell: pwsh
       run: |
-        cd
+        cd ${{ github.workspace }}
         mkdir Licenses
         cd Licenses
         cp ../dav1d/COPYING dav1d.txt
@@ -81,17 +68,18 @@ jobs:
         cp ../libheif/COPYING libheif.txt
 
     - name: Create archive
+      shell: pwsh
       run: |
-        cd
-        zip ${{ matrix.config.archive }} -r src LICENSE Readme.md Licenses ifheif.${{ matrix.config.ext }}
+        cd ${{ github.workspace }}
+        7z a ${{ matrix.config.archive }}.zip -r src LICENSE Readme.md Licenses ifheif.${{ matrix.config.ext }}
 
     - uses: actions/upload-artifact@v6
       with:
         name: ${{ matrix.config.archive }}
-        path: ${{ steps.msys2.outputs.msys2-location }}/home/runneradmin/*.zip
+        path: ${{ matrix.config.archive }}.zip
 
   release:
-    needs: msys-build
+    needs: msvc-build
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
