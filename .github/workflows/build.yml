@@ -2,7 +2,6 @@ name: Build ifheif
 
 on:
   push:
-  
 
 jobs:
   msvc-build:
@@ -102,7 +101,7 @@ jobs:
     # https://gist.github.com/superbrothers/af84a2f8af394a62352e06537a640746        
     - name: Create a Release
       shell: pwsh
-      if: ${{ github.ref == 'refs/heads/master' }}
+      if: ${{ github.ref == 'refs/heads/main' }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |

@@ -8,7 +8,7 @@ libheifを使用し、HEIF/AVIFを読み込むためのSusie Plug-inです。(Av
 - .sph   Susie 64bit(x64) Plug-in
 
 ## ビルド方法
-MSVCを用いてのビルド手順は[build.yml](https://github.com/Mr-Ojii/ifheif/blob/master/.github/workflows/build.yml)をご覧ください。
+MSVCを用いてのビルド手順は[build.yml](https://github.com/Mr-Ojii/ifheif/blob/main/.github/workflows/build.yml)をご覧ください。
 
 ## 注意事項
 + もともとの画像が何bit depthであろうが、8bit depthに変換します(多分)
