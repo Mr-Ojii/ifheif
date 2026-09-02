@@ -51,7 +51,7 @@ jobs:
       shell: pwsh
       run: |
         cd ${{ github.workspace }}
-        git clone https://github.com/strukturag/libheif.git -b v1.23.2 --depth 1
+        git clone https://github.com/strukturag/libheif.git -b v1.23.3 --depth 1
         cd libheif
         $Env:CMAKE_PREFIX_PATH="${HOME}/dec"
         cmake -B build -G Ninja --preset=release -DBUILD_SHARED_LIBS=OFF -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded -DBUILD_DOCUMENTATION=OFF -DWITH_EXAMPLES=OFF -DWITH_GDK_PIXBUF=OFF -DENABLE_PLUGIN_LOADING=OFF -DWITH_HEADER_COMPRESSION=OFF -DWITH_UNCOMPRESSED_CODEC=OFF -DCMAKE_INSTALL_PREFIX="${HOME}/dec" -DCMAKE_CXX_FLAGS="/DLIBDE265_STATIC_BUILD" -DCMAKE_C_FLAGS="/DLIBDE265_STATIC_BUILD"  .
