@@ -287,8 +287,8 @@ int load_heif(const void* buf, long len, PictureInfo* info, HLOCAL* data) {
                 if(data) {
                     struct heif_image* img;
                     if(!heif_decode_image(handle, &img, heif_colorspace_RGB, heif_chroma_interleaved_RGBA, NULL).code) {
-                        int stride;
-                        const uint8_t* b_dat = reinterpret_cast<const uint8_t*>(heif_image_get_plane_readonly(img, heif_channel_interleaved, &stride));
+                        size_t stride;
+                        const uint8_t* b_dat = reinterpret_cast<const uint8_t*>(heif_image_get_plane_readonly2(img, heif_channel_interleaved, &stride));
                         *data = LocalAlloc(LMEM_MOVEABLE, info->width * info->height * (info->colorDepth / 8));
                         if(*data) {
                             Pixel_BGRA* dat = reinterpret_cast<Pixel_BGRA*>(LocalLock(*data));
