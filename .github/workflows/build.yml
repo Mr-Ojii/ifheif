@@ -78,7 +78,7 @@ jobs:
       shell: pwsh
       run: |
         cd ${{ github.workspace }}
-        7z a ${{ matrix.config.archive }}.zip -r "src/*" "Licenses/*" LICENSE Readme.md ifheif.${{ matrix.config.ext }}
+        7z a ${{ matrix.config.archive }}.zip "src/*" "Licenses/*" LICENSE Readme.md ifheif.${{ matrix.config.ext }}
 
     - uses: actions/upload-artifact@v7
       with:
