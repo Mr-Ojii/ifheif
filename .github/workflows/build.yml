@@ -80,7 +80,7 @@ jobs:
         cd ${{ github.workspace }}
         7z a ${{ matrix.config.archive }}.zip -r src LICENSE Readme.md Licenses ifheif.${{ matrix.config.ext }}
 
-    - uses: actions/upload-artifact@v6
+    - uses: actions/upload-artifact@v7
       with:
         name: ${{ matrix.config.archive }}
         path: ${{ matrix.config.archive }}.zip
@@ -94,7 +94,7 @@ jobs:
       with:
         fetch-depth: 0
 
-    - uses: actions/download-artifact@v7
+    - uses: actions/download-artifact@v8
       with:
         path: artifacts
 
