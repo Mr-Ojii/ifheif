@@ -113,4 +113,4 @@ jobs:
         $RELEASE_NAME="r${REVCOUNT}"
         $TAG_NAME="r${REVCOUNT}"
         mv ./artifacts/*/*.zip ./
-        gh release create "${TAG_NAME}" ./*.zip -t "${RELEASE_NAME}"
+        gh release create "${TAG_NAME}" ./*.zip -t "${RELEASE_NAME}" --target "${{ github.sha }}"
