@@ -30,7 +30,7 @@ jobs:
       shell: pwsh
       run: |
         cd ${{ github.workspace }}
-        git clone https://code.videolan.org/videolan/dav1d.git -b 1.5.4 --depth 1
+        git clone https://code.videolan.org/videolan/dav1d.git -b 1.5.5 --depth 1
         cd dav1d
         meson setup --prefix="${HOME}/dec" --buildtype release --default-library=static -Db_vscrt=mt build
         ninja -C build
