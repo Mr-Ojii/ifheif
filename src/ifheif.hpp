@@ -10,15 +10,15 @@
 static const char* plugin_info[] = {
     "00IN",
     "HEIF AVIF Reader by Mr-Ojii",
-    "*.heif;*.heic;*.avif",
-    "HEIF File(*.heif,*.heic);AVIF File(*.avif)"
+    "*.heif;*.heic;*.hif;*.avif",
+    "HEIF File(*.heif,*.heic,*.hif);AVIF File(*.avif)"
 };
 
 static const wchar_t* plugin_info_w[] = {
     L"00IN",
     L"HEIF AVIF Reader by Mr-Ojii",
-    L"*.heif;*.heic;*.avif",
-    L"HEIF File(*.heif,*.heic);AVIF File(*.avif)"
+    L"*.heif;*.heic;*.hif;*.avif",
+    L"HEIF File(*.heif,*.heic,*.hif);AVIF File(*.avif)"
 };
 
 #pragma pack(push, 1)
