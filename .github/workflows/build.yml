@@ -40,9 +40,7 @@ jobs:
       shell: pwsh
       run: |
         cd ${{ github.workspace }}
-        git clone https://github.com/strukturag/libde265.git
-        cd libde265
-        git checkout eb346780796055d9f9aac62d725d3170aa60c7b4
+        git clone https://github.com/strukturag/libde265.git -b v1.1.3 --depth 1
         cmake -B build -G Ninja --preset=release -DBUILD_SHARED_LIBS=OFF -DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded -DENABLE_DECODER=OFF -DENABLE_ENCODER=OFF -DCMAKE_INSTALL_PREFIX="${HOME}/dec" .
         cmake --build build --config Release --parallel
         cmake --install build --config Release
