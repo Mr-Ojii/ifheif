@@ -109,7 +109,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         cd ${{ github.workspace }}
-        $REVCOUNT=git rev-list --count HEAD
+        $REVCOUNT=$(git rev-list --count HEAD)
         $RELEASE_NAME="r${REVCOUNT}"
         $TAG_NAME="r${REVCOUNT}"
         mv ./artifacts/*/*.zip ./
